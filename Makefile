@@ -12,7 +12,7 @@ ifeq ($(TARGET), hocoslamfy)
   CC        := arm-linux-gcc
   STRIP     := arm-linux-strip
   OBJS       = platform/opendingux.o
-  DEFS      := -DNO_SHAKE -DUSE_HOME
+  DEFS      := -DNO_SHAKE -DUSE_HOME -DMIYOO
   FLAGS     :=
   DEVICE    := miyoo
 else

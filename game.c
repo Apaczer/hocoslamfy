@@ -36,6 +36,15 @@
 #include "bg.h"
 #include "text.h"
 #include "audio.h"
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#ifdef MIYOO
+#define MIYOO_VIR_SET_MODE    _IOWR(0x100, 0, unsigned long)
+#endif
 
 #ifndef NO_SHAKE
 #include <shake.h>
@@ -66,6 +75,9 @@ static bool                   PlayerBlinking;
 // Time the player's character has left before blinking, if Blinking is false.
 static uint32_t               PlayerBlinkTime;
 
+//time rumble started
+static uint32_t               PlayerRumbleTime = 0;
+
 // Passed to the score screen after the player is done dying.
 static enum GameOverReason    GameOverReason;
 
@@ -74,6 +86,10 @@ static struct HocoslamfyRect* Rectangles     = NULL;
 static uint32_t               RectangleCount = 0;
 
 static float                  GenDistance;
+
+#ifdef MIYOO
+int motordev=-1;
+#endif
 
 void GameGatherInput(bool* Continue)
 {
@@ -101,6 +117,12 @@ void GameGatherInput(bool* Continue)
 	}
 }
 
+#ifdef MIYOO
+void ToggleRumble(bool rumble){
+	ioctl(motordev, MIYOO_VIR_SET_MODE, rumble ? 0 : 1);	
+}
+#endif
+
 static void SetStatus(const enum PlayerStatus NewStatus)
 {
 	PlayerFrameTime = 0;
@@ -112,6 +134,9 @@ static void SetStatus(const enum PlayerStatus NewStatus)
 		if (Rumble) {
 			Shake_Play(device, crash_effect_id);
 		}
+#endif
+#ifdef MIYOO
+		ToggleRumble(true);
 #endif
 		PlaySFXCollision();
 	}
@@ -141,6 +166,10 @@ static void AnimationControl(Uint32 Milliseconds)
 			PlayerFrame = (PlayerFrame + (PlayerFrameTime + Remainder) / ANIMATION_TIME) % ANIMATION_FRAMES;
 			// Then add milliseconds for the current frame.
 			PlayerFrameTime = (PlayerFrameTime + Remainder) % ANIMATION_TIME;
+#ifdef MIYOO
+			ToggleRumble(false);
+			close(motordev);
+#endif
 			break;
 
 		case COLLIDED:
@@ -266,6 +295,10 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
         }
 #endif
 				PlaySFXFly();
+#ifdef MIYOO
+				ToggleRumble(true);
+				PlayerRumbleTime = 1;
+#endif
 			}
 			// Update the player's position.
 			// If the player's position has collided with the borders of the field,
@@ -276,6 +309,15 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				SetStatus(COLLIDED);
 				GameOverReason = FIELD_BORDER_COLLISION;
 				break;
+			}
+
+			if(PlayerRumbleTime > 0) {
+				if (PlayerRumbleTime > 5000) {
+					ToggleRumble(false);
+					PlayerRumbleTime=0;
+				} else {
+					PlayerRumbleTime += Milliseconds;
+				}
 			}
 
 			// Collision detection.
@@ -522,6 +564,10 @@ if (FollowBee) {
 void ToGame(void)
 {
 
+#ifdef MIYOO
+	motordev=-1;
+	motordev = open("/dev/miyoo_vir", O_RDWR);
+#endif
 	Score = 0;
 	Boost = false;
 	Pause = false;
