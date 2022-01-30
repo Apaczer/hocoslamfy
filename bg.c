@@ -25,6 +25,8 @@
 #include "game.h"
 #include "bg.h"
 
+// The width after which the background repeats. (In pixels of the screen.)
+#define BG_WIDTH 160
 // The X coordinates from which the various layers of the background start to
 // be rendered. (In meters.)
 static       float    BG_X     [BG_LAYER_COUNT] = {
@@ -43,8 +45,13 @@ static const float    BG_Speed [BG_LAYER_COUNT] = {
 static const uint32_t BG_StartY[BG_LAYER_COUNT] = {
 	/* "Sky.png", "Mountains.png", "Clouds3.png", "Clouds2.png",
 	 * "Clouds1.png", "Grass3.png", "Grass2.png", "Grass1.png" */
+#if SCREEN_HEIGHT == 160
+	 30,  84,  12,  -2,
+	-16, 130, 138, 150
+#else
 	 50, 128,  32,  16,
 	  0, 180, 190, 204
+#endif
 };
 static const uint32_t BG_Height[BG_LAYER_COUNT] = {
 	140,  60,  28,  28,
@@ -56,7 +63,7 @@ void AdvanceBackground(uint32_t Milliseconds)
 	uint32_t i;
 	for (i = 0; i < BG_LAYER_COUNT; i++)
 	{
-		BG_X[i] = fmodf(BG_X[i] + BG_Speed[i] * Milliseconds / 1000, FIELD_WIDTH * 0.5f);
+		BG_X[i] = fmodf(BG_X[i] + SCREEN_WIDTH * BG_Speed[i] * Milliseconds / 1000, BG_WIDTH);
 	}
 }
 
@@ -66,7 +73,7 @@ void DrawBackground(void)
 	for (i = 0; i < BG_LAYER_COUNT; i++)
 	{
 		SDL_Rect SourceRect = {
-			.x = (int) (BG_X[i] * SCREEN_WIDTH / FIELD_WIDTH),
+			.x = (int) BG_X[i],
 			.y = 0,
 			.w = SCREEN_WIDTH,
 			.h = BG_Height[i] };

@@ -8,4 +8,4 @@ Everything's under the GPL version 2.
 
 To compile this for PC, use `make clean; make` on a PC with SDL, SDL-image and SDL-mixer 1.2. You'll then get a windowed SDL game.
 
-To compile this for OpenDingux, use `make TARGET=hocoslamfy-od clean; make TARGET=hocoslamfy-od opk` on a PC with the `PATH` set to include your OpenDingux mipsel toolchain.
+To compile this for OpenDingux on Dingoo A320 or GCW Zero, use `make TARGET=hocoslamfy-gcw0 clean; make TARGET=hocoslamfy-gcw0 opk` on a PC with the `PATH` set to include your OpenDingux mipsel toolchain. To compile for OpenDingux on RS-90, substitute `TARGET=hocoslamfy-rs90`.

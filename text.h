@@ -59,4 +59,12 @@ extern uint32_t GetRenderedWidth(const char* str);
 
 extern uint32_t GetRenderedHeight(const char* str);
 
+#if SCREEN_BPP == 16
+#define PrintString            PrintString16
+#define PrintStringOutline     PrintStringOutline16
+#else
+#define PrintString            PrintString32
+#define PrintStringOutline     PrintStringOutline32
+#endif
+
 #endif /* !defined(_TEXT_H_) */

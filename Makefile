@@ -1,15 +1,36 @@
 TARGET      ?= hocoslamfy-od
 
-ifeq ($(TARGET), hocoslamfy-od)
+ifeq ($(TARGET), hocoslamfy-gcw0)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
   DEFS      := -DOPK
+  DEVICE    := gcw0
 else
+ifeq ($(TARGET), hocoslamfy-lepus)
+  CC        := mipsel-linux-gcc
+  STRIP     := mipsel-linux-strip
+  OBJS       = platform/opendingux.o
+  DEFS      := -DOPK
+  DEVICE    := lepus
+else
+ifeq ($(TARGET), hocoslamfy-rs90)
+  CC        := mipsel-linux-gcc
+  STRIP     := mipsel-linux-strip
+  OBJS       = platform/opendingux.o
+  DEFS      := -DOPK -DSCREEN_WIDTH=240 -DSCREEN_HEIGHT=160 -DSCREEN_BPP=16
+  DEVICE    := rs90
+else
+ifeq ($(TARGET), hocoslamfy)
   CC        := gcc
   STRIP     := strip
   OBJS       = platform/general.o
   DEFS      := 
+else
+  $(error Unknown target: $(TARGET))
+endif
+endif
+endif
 endif
 
 SYSROOT     := $(shell $(CC) --print-sysroot)
@@ -26,26 +47,37 @@ DEFS        +=
 
 CFLAGS       = $(SDL_CFLAGS) -Wall -Wno-unused-variable \
                -O2 -fomit-frame-pointer $(DEFS) $(INCLUDE)
-LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer  -lshake
+LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer -lshake
 
 ifneq (, $(findstring MINGW, $(shell uname -s)))
 	CFLAGS+=-DDONT_USE_PWD
 endif
 
-include Makefile.rules
+WAVS        := $(wildcard sound/*.wav)
+OGGS        := $(WAVS:sound/%.wav=data/%.ogg)
+
+DATA_TO_CLEAN := $(OGGS)
 
 .PHONY: all opk
 
-all: $(TARGET)
+all: $(TARGET) $(OGGS)
 
-$(TARGET): $(OBJS)
+include Makefile.rules
+
+$(OGGS): data/%.ogg: sound/%.wav
+	$(SUM) "  OGG     $@"
+	$(CMD)oggenc --resample 44100 -q2 $< -o $@
 
 opk: $(TARGET).opk
 
-$(TARGET).opk: $(TARGET)
+$(TARGET).opk: $(TARGET) $(OGGS)
 	$(SUM) "  OPK     $@"
 	$(CMD)rm -rf .opk_data
-	$(CMD)cp -r data .opk_data
+	$(CMD)mkdir -p .opk_data
+	$(CMD)cp data/default.$(DEVICE).desktop .opk_data/
+	$(CMD)cp data/*.png .opk_data/
+	$(CMD)cp $(OGGS) .opk_data/
+	$(CMD)cp data/*.txt .opk_data/
 	$(CMD)cp COPYRIGHT .opk_data/COPYRIGHT
 	$(CMD)cp $< .opk_data/$(TARGET)
 	$(CMD)$(STRIP) .opk_data/$(TARGET)
