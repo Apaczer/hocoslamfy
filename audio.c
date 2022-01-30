@@ -83,12 +83,17 @@ void FinalizeAudio()
 	{
 		Mix_HaltMusic();
 		Mix_FreeMusic(BGM);
-		BGM = NULL;
 		Mix_FreeChunk(SFX_Fly);
 		Mix_FreeChunk(SFX_Pass);
 		Mix_FreeChunk(SFX_Collision);
 		Mix_FreeChunk(SFX_HighScore);
 		Mix_CloseAudio();
+
+		BGM = NULL;
+		SFX_Fly = NULL;
+		SFX_Pass = NULL;
+		SFX_Collision = NULL;
+		SFX_HighScore = NULL;
 	}
 }
 

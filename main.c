@@ -25,20 +25,20 @@
 #include "init.h"
 #include "platform.h"
 
-static bool         Continue                             = true;
-static bool         Error                                = false;
+static bool  Continue                          		= true;
+static bool  Error                             		= false;
 
-       SDL_Surface* Screen                               = NULL;
-       SDL_Surface* TitleScreenFrames[TITLE_FRAME_COUNT] = { NULL };
-       SDL_Surface* BackgroundImages[BG_LAYER_COUNT]     = { NULL };
-       SDL_Surface* CharacterFrames                      = NULL;
-       SDL_Surface* ColumnImage                          = NULL;
-       SDL_Surface* CollisionImage                       = NULL;
-       SDL_Surface* GameOverFrame                        = NULL;
+SDL_Surface* Screen                               	= NULL;
+SDL_Surface* TitleScreenFrames[TITLE_FRAME_COUNT] 	= { NULL };
+SDL_Surface* BackgroundImages[BG_LAYER_COUNT]     	= { NULL };
+SDL_Surface* CharacterFrames                      	= NULL;
+SDL_Surface* ColumnImage                          	= NULL;
+SDL_Surface* CollisionImage                       	= NULL;
+SDL_Surface* GameOverFrame                        	= NULL;
 
-       TGatherInput GatherInput;
-       TDoLogic     DoLogic;
-       TOutputFrame OutputFrame;
+TGatherInput GatherInput;
+TDoLogic     DoLogic;
+TOutputFrame OutputFrame;
 
 int main(int argc, char* argv[])
 {
@@ -56,5 +56,10 @@ int main(int argc, char* argv[])
 		Duration = ToNextFrame();
 	}
 	Finalize();
+
+	GatherInput = NULL;
+	DoLogic = NULL;
+	OutputFrame = NULL;
+
 	return Error ? 1 : 0;
 }

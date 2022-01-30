@@ -191,29 +191,29 @@ void Initialize(bool* Continue, bool* Error)
 	// Title screen. (-> title.c)
 	Rumble = true;
 	Shake_Init();
-        device = Shake_Open(0);
+	device = Shake_Open(0);
 
-        Shake_InitEffect(&flap_effect, SHAKE_EFFECT_RUMBLE);
-        flap_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
-        flap_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX*0.9;
-        flap_effect.length = 380;
-        flap_effect.delay = 0;
+	Shake_InitEffect(&flap_effect, SHAKE_EFFECT_RUMBLE);
+	flap_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+	flap_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX*0.9;
+	flap_effect.length = 380;
+	flap_effect.delay = 0;
 
-        Shake_InitEffect(&flap_effect1, SHAKE_EFFECT_RUMBLE);
-        flap_effect1.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
-        flap_effect1.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX*0.9;
-        flap_effect1.length = 380;
-        flap_effect1.delay = 0;
+	Shake_InitEffect(&flap_effect1, SHAKE_EFFECT_RUMBLE);
+	flap_effect1.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+	flap_effect1.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX*0.9;
+	flap_effect1.length = 380;
+	flap_effect1.delay = 0;
 
-        Shake_InitEffect(&crash_effect, SHAKE_EFFECT_RUMBLE);
-        crash_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
-        crash_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
-        crash_effect.length = 1000;
-        crash_effect.delay = 0;
+	Shake_InitEffect(&crash_effect, SHAKE_EFFECT_RUMBLE);
+	crash_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+	crash_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+	crash_effect.length = 1000;
+	crash_effect.delay = 0;
 
-        flap_effect_id = Shake_UploadEffect(device, &flap_effect);
-        flap_effect_id1 = Shake_UploadEffect(device, &flap_effect1);
-        crash_effect_id = Shake_UploadEffect(device, &crash_effect);
+	flap_effect_id = Shake_UploadEffect(device, &flap_effect);
+	flap_effect_id1 = Shake_UploadEffect(device, &flap_effect1);
+	crash_effect_id = Shake_UploadEffect(device, &crash_effect);
 #endif
 
 	FollowBee = false;
@@ -249,19 +249,27 @@ void Finalize()
 	CharacterFrames = NULL;
 	SDL_FreeSurface(ColumnImage);
 	ColumnImage = NULL;
+	SDL_FreeSurface(CollisionImage);
+	CollisionImage = NULL;
 	SDL_FreeSurface(GameOverFrame);
 	GameOverFrame = NULL;
 
 #ifndef NO_SHAKE
 	Shake_Stop(device, flap_effect_id);
 	Shake_Stop(device, flap_effect_id1);
-        Shake_Stop(device, crash_effect_id);
+	Shake_Stop(device, crash_effect_id);
 
-        Shake_EraseEffect(device, flap_effect_id);
-        Shake_EraseEffect(device, flap_effect_id1);
-        Shake_EraseEffect(device, crash_effect_id);
-        Shake_Close(device);
-        Shake_Quit();
+	Shake_EraseEffect(device, flap_effect_id);
+	Shake_EraseEffect(device, flap_effect_id1);
+	Shake_EraseEffect(device, crash_effect_id);
+
+	Shake_Close(device);
+	Shake_Quit();
+
+	flap_effect_id = NULL;
+	flap_effect_id1 = NULL;
+	crash_effect_id = NULL;
+	device = NULL;
 #endif
 	SDL_Quit();
 }

@@ -103,10 +103,11 @@ static void SetStatus(const enum PlayerStatus NewStatus)
 	if (NewStatus == COLLIDED && PlayerStatus != COLLIDED)
 	{
 #ifndef NO_SHAKE		
-		Shake_Status ss;
-    if (Rumble) {
-		  ss = Shake_Play(device, crash_effect_id);
-    }
+		Shake_Stop(device, flap_effect_id);
+		Shake_Stop(device, flap_effect_id1);
+		if (Rumble) {
+			Shake_Play(device, crash_effect_id);
+		}
 #endif
 		PlaySFXCollision();
 	}

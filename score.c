@@ -251,9 +251,11 @@ uint32_t GetHighScore()
 #if USE_HOME	
 	char *home = getenv("HOME");
 	snprintf(path, 256, "%s/%s/%s", home, SavePath, HighScoreFilePath);	
+	home = NULL;
 #else
 	struct passwd *pw = getpwuid(getuid());
 	snprintf(path, 256, "%s/%s/%s", pw->pw_dir, SavePath, HighScoreFilePath);
+	pw = NULL;
 #endif	
 #else
 	snprintf(path, 256, "%s", HighScoreFilePath);
@@ -267,6 +269,7 @@ uint32_t GetHighScore()
 	char line[256];
 	GetFileLine(line, 256, fp);
 	fclose(fp);
+	fp = NULL;
 	
 	uint32_t hs = 0;
 	if (sscanf(line, "%" SCNu32, &hs) != 1)
