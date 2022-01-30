@@ -266,9 +266,6 @@ void Finalize()
 	Shake_Close(device);
 	Shake_Quit();
 
-	flap_effect_id = NULL;
-	flap_effect_id1 = NULL;
-	crash_effect_id = NULL;
 	device = NULL;
 #endif
 	SDL_Quit();
