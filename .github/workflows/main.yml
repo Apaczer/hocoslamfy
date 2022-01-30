@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        target: ['gcw0']
+        target: ['lepus', 'gcw0', 'rs90']
     container:
       image: ghcr.io/arcnor/toolchain-opendingux/${{ matrix.target }}
     steps:
@@ -22,3 +22,24 @@ jobs:
         name: hocoslamfy-${{ matrix.target }}
         path: |
           hocoslamfy-${{ matrix.target }}.opk
+  build-merged:
+    name: Build merged OPK
+    runs-on: ubuntu-20.04
+    needs: build
+    container:
+      image: ghcr.io/arcnor/toolchain-opendingux/lepus
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        path: opks
+    - name: Merge all opks
+      run: |
+        find . -name '*.opk' -exec unsquashfs -d output -f {} \;
+        mksquashfs output hocoslamfy-all.opk -all-root -noappend -no-exports -no-xattrs -no-progress
+      shell: bash
+      working-directory: opks
+    - uses: actions/upload-artifact@v2
+      with:
+        name: hocoslamfy-all
+        path: |
+          opks/hocoslamfy-all.opk
