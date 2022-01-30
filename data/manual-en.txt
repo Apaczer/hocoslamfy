@@ -1,7 +1,5 @@
 Hocoslamfy: an open-source Flappy Bird clone created from scratch
 
-- OpenDingux version, 2014-03-09 -
-
 == Table of contents ==
 1. Playing the game
    a) The aim of the game
@@ -45,6 +43,6 @@ Sound effects: petenice, Aiwha, Mike Koenig, Yannick Lemieux
 
 == Source code ==
 Find the latest source code for Hocoslamfy at:
-  https://github.com/Nebuleon/hocoslamfy
+  https://github.com/OpenDingux/hocoslamfy
 Full attribution can be found in the COPYRIGHT file, which is also in the release as COPYRIGHT:
-  https://github.com/Nebuleon/hocoslamfy/blob/master/COPYRIGHT
+  https://github.com/OpenDingux/hocoslamfy/blob/master/COPYRIGHT

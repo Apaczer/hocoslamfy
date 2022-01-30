@@ -1,0 +1,5 @@
+*.o
+data/*.ogg
+hocoslamfy
+hocoslamfy-*
+.opk_data/
