@@ -5,6 +5,7 @@ ifeq ($(TARGET), hocoslamfy-gcw0)
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
   DEFS      := -DOPK
+  FLAGS     := -lshake
   DEVICE    := gcw0
 else
 ifeq ($(TARGET), hocoslamfy-lepus)
@@ -12,6 +13,7 @@ ifeq ($(TARGET), hocoslamfy-lepus)
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
   DEFS      := -DOPK -DNO_SHAKE
+  FLAGS     := 
   DEVICE    := lepus
 else
 ifeq ($(TARGET), hocoslamfy-rs90)
@@ -19,6 +21,7 @@ ifeq ($(TARGET), hocoslamfy-rs90)
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
   DEFS      := -DOPK -DSCREEN_WIDTH=240 -DSCREEN_HEIGHT=160 -DSCREEN_BPP=16 -DNO_SHAKE
+  FLAGS     := 
   DEVICE    := rs90
 else
 ifeq ($(TARGET), hocoslamfy)
@@ -26,6 +29,7 @@ ifeq ($(TARGET), hocoslamfy)
   STRIP     := strip
   OBJS       = platform/general.o
   DEFS      := 
+  FLAGS     := 
 else
   $(error Unknown target: $(TARGET))
 endif
@@ -47,7 +51,7 @@ DEFS        +=
 
 CFLAGS       = $(SDL_CFLAGS) -Wall -Wno-unused-variable \
                -O2 -fomit-frame-pointer $(DEFS) $(INCLUDE)
-LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer -lshake
+LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer $(FLAGS)
 
 ifneq (, $(findstring MINGW, $(shell uname -s)))
 	CFLAGS+=-DDONT_USE_PWD
