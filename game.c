@@ -406,8 +406,6 @@ if (!FollowBee) {
 		}
 	}
 }
-	if (SDL_MUSTLOCK(Screen))
-		SDL_UnlockSurface(Screen);
 
 	// Draw the character.
 	SDL_Rect PlayerDestRect = {
@@ -464,6 +462,8 @@ if (FollowBee) {
 		}
 	}
 }
+	if (SDL_MUSTLOCK(Screen))
+		SDL_UnlockSurface(Screen);
 	
 #ifdef DRAW_BEE_COLLISION
 	SDL_Rect PlayerPixelsA = {
