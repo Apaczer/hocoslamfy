@@ -110,6 +110,9 @@ void TitleScreenGatherInput(bool* Continue)
 		else if (IsScoreToggleEvent(&ev))
 		{
 			FollowBee = !FollowBee;
+			free(WelcomeMessage);
+			WelcomeMessage=NULL;
+			setWelcomeMessage();
 		}		
 	}
 }
