@@ -28,6 +28,9 @@
 static bool  Continue                          		= true;
 static bool  Error                             		= false;
 
+bool Rumble = false;
+bool FollowBee = false;
+
 SDL_Surface* Screen                               	= NULL;
 SDL_Surface* TitleScreenFrames[TITLE_FRAME_COUNT] 	= { NULL };
 SDL_Surface* BackgroundImages[BG_LAYER_COUNT]     	= { NULL };

@@ -27,8 +27,8 @@
 #include "bg.h"
 #include "title.h"
 
-static bool Rumble;
-static bool FollowBee;
+extern bool Rumble;
+extern bool FollowBee;
 
 typedef void (*TGatherInput) (bool* Continue);
 typedef void (*TDoLogic) (bool* Continue, bool* Error, Uint32 Milliseconds);
