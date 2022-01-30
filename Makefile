@@ -11,14 +11,14 @@ ifeq ($(TARGET), hocoslamfy-lepus)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
-  DEFS      := -DOPK NO_SHAKE
+  DEFS      := -DOPK -DNO_SHAKE
   DEVICE    := lepus
 else
 ifeq ($(TARGET), hocoslamfy-rs90)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
-  DEFS      := -DOPK -DSCREEN_WIDTH=240 -DSCREEN_HEIGHT=160 -DSCREEN_BPP=16 NO_SHAKE
+  DEFS      := -DOPK -DSCREEN_WIDTH=240 -DSCREEN_HEIGHT=160 -DSCREEN_BPP=16 -DNO_SHAKE
   DEVICE    := rs90
 else
 ifeq ($(TARGET), hocoslamfy)
