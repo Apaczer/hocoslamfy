@@ -433,14 +433,16 @@ if (FollowBee) {
 		char RectScoreString[11];
 		sprintf(RectScoreString, "%" PRIu32, Score);
 		uint32_t RenderedWidth = GetRenderedWidth(RectScoreString) + 2;
+		uint32_t RenderedHeight = GetRenderedHeight(RectScoreString) + 2;
 		int32_t Left = PlayerDestRect.x;
 		RectScore++;
-		if (Left >= 0 && Left + RenderedWidth < SCREEN_WIDTH)
+		if (Left >= 0 && Left < SCREEN_WIDTH)
 		{
 			Uint32 RectScoreColor;
 			RectScoreColor = SDL_MapRGB(Screen->format, 255, 255, 255); // white
 
-			if (PlayerDestRect.y<200) {
+			if (PlayerDestRect.y + PlayerDestRect.h - 8 + RenderedHeight < SCREEN_HEIGHT)
+			{
 #ifdef USE_16BPP			
 				PrintStringOutline16(RectScoreString,
 #else
@@ -450,12 +452,10 @@ if (FollowBee) {
 					SDL_MapRGB(Screen->format, 0, 0, 0),
 					Screen->pixels,
 					Screen->pitch,
-					Left,
-					/* Even-numbered rectangle indices are at the top of the field,
-					 * so start the Y below that. */
-					PlayerDestRect.y,
+					Left - RenderedWidth + 4,
+					PlayerDestRect.y + PlayerDestRect.h - 8,
 					RenderedWidth,
-					(int) (GAP_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT),
+					RenderedHeight,
 					CENTER,
 					MIDDLE);
 			}
