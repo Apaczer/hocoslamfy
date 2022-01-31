@@ -427,7 +427,7 @@ if (FollowBee) {
 	// the score represented by the first rectangle shown.
 	uint32_t RectScore = Score - PassedCount;
 	if (SDL_MUSTLOCK(Screen))
-		SDL_UnlockSurface(Screen);
+		SDL_LockSurface(Screen);
 	for (i = 0; i < 1; i += 2)
 	{
 		char RectScoreString[11];
