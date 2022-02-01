@@ -113,7 +113,11 @@ void TitleScreenGatherInput(bool* Continue)
 			free(WelcomeMessage);
 			WelcomeMessage=NULL;
 			setWelcomeMessage();
-		}		
+		}
+		else if (IsScreenshotEvent(&ev))
+		{
+			MakeScreenshot();
+		}
 	}
 }
 

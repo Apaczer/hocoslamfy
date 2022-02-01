@@ -114,3 +114,14 @@ const char* GetPausePrompt(void)
 {
 	return "P";
 }
+
+bool IsScreenshotEvent(const SDL_Event* event)
+{
+	return event->type == SDL_KEYDOWN
+	    && event->key.keysym.sym == SDLK_PAGEDOWN;
+}
+
+const char* GetScreenshotPrompt(void)
+{
+	return "PageDown";
+}

@@ -58,3 +58,6 @@ const char* GetRumblePrompt(void);
 
 bool IsScoreToggleEvent(const SDL_Event* event);
 const char* GetScoreTogglePrompt(void);
+
+bool IsScreenshotEvent(const SDL_Event* event);
+const char* GetScreenshotPrompt(void);

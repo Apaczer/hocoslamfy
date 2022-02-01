@@ -49,6 +49,7 @@ extern int flap_effect_id, flap_effect_id1, crash_effect_id;
 
 #endif
 
+extern void MakeScreenshot(void);
 void Initialize(bool* Continue, bool* Error);
 void Finalize(void);
 

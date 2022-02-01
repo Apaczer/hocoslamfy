@@ -20,8 +20,6 @@
 #ifndef _SCORE_H_
 #define _SCORE_H_
 
-#include <stdbool.h>
-
 enum GameOverReason
 {
 	FIELD_BORDER_COLLISION,

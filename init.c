@@ -32,6 +32,7 @@
 #include "game.h"
 #include "platform.h"
 #include "title.h"
+#include "path.h"
 #ifndef NO_SHAKE
 #include <shake.h>
 
@@ -269,4 +270,16 @@ void Finalize()
 	device = NULL;
 #endif
 	SDL_Quit();
+}
+
+void MakeScreenshot()
+{
+	char path[256];
+	GetFullPath(path, "screenshot.bmp");
+
+	if (SDL_MUSTLOCK(Screen))
+		SDL_LockSurface(Screen);
+	SDL_SaveBMP(Screen, path);
+	if (SDL_MUSTLOCK(Screen))
+		SDL_UnlockSurface(Screen);
 }

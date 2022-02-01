@@ -23,10 +23,6 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#ifndef DONT_USE_PWD
-#include <pwd.h>
-#endif
 
 #include <SDL/SDL.h>
 
@@ -38,12 +34,10 @@
 #include "bg.h"
 #include "text.h"
 #include "audio.h"
+#include "path.h"
 
 static bool  WaitingForRelease = false;
-
 static char* ScoreMessage      = NULL;
-
-static const char* SavePath = ".hocoslamfy";
 static const char* HighScoreFilePath = "highscore";
 
 void ScoreGatherInput(bool* Continue)
@@ -74,6 +68,10 @@ void ScoreGatherInput(bool* Continue)
 				ScoreMessage = NULL;
 			}
 			return;
+		}
+		else if (IsScreenshotEvent(&ev))
+		{
+			MakeScreenshot();
 		}
 	}
 }
@@ -185,37 +183,11 @@ void ToScore(uint32_t Score, enum GameOverReason GameOverReason, uint32_t HighSc
 	OutputFrame = ScoreOutputFrame;
 }
 
-int MkDir(char *path)
-{
-#ifndef DONT_USE_PWD
-	return mkdir(path, S_IRWXU | S_IRWXG | S_IRWXO);
-#else
-	return mkdir(path);
-#endif
-}
-
 void SaveHighScore(uint32_t Score)
 {
 	char path[256];
-#ifndef DONT_USE_PWD
-#if USE_HOME	
-	char *home = getenv("HOME");
-	
-	snprintf(path, 256, "%s/%s", home, SavePath);
-	MkDir(path);	
-	
-	snprintf(path, 256, "%s/%s/%s", home, SavePath, HighScoreFilePath);	
-#else
-	struct passwd *pw = getpwuid(getuid());
-	
-	snprintf(path, 256, "%s/%s", pw->pw_dir, SavePath);
-	MkDir(path);
-	
-	snprintf(path, 256, "%s/%s/%s", pw->pw_dir, SavePath, HighScoreFilePath);
-#endif	
-#else
-	snprintf(path, 256, "%s", HighScoreFilePath);
-#endif
+	GetFullPath(path, HighScoreFilePath);
+
 	FILE *fp = fopen(path, "w");
 
 	if (!fp)
@@ -247,19 +219,7 @@ void GetFileLine(char *str, uint32_t size, FILE *fp)
 uint32_t GetHighScore()
 {
 	char path[256];
-#ifndef DONT_USE_PWD
-#if USE_HOME	
-	char *home = getenv("HOME");
-	snprintf(path, 256, "%s/%s/%s", home, SavePath, HighScoreFilePath);	
-	home = NULL;
-#else
-	struct passwd *pw = getpwuid(getuid());
-	snprintf(path, 256, "%s/%s/%s", pw->pw_dir, SavePath, HighScoreFilePath);
-	pw = NULL;
-#endif	
-#else
-	snprintf(path, 256, "%s", HighScoreFilePath);
-#endif
+	GetFullPath(path, HighScoreFilePath);
 
 	FILE *fp = fopen(path, "r");
 
@@ -277,4 +237,3 @@ uint32_t GetHighScore()
 
 	return hs;
 }
-

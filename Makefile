@@ -42,9 +42,9 @@ SDL_CONFIG  ?= $(SYSROOT)/usr/bin/sdl-config
 SDL_CFLAGS  := $(shell $(SDL_CONFIG) --cflags)
 SDL_LIBS    := $(shell $(SDL_CONFIG) --libs)
 
-OBJS        += main.o init.o title.o game.o score.o audio.o bg.o text.o unifont.o
+OBJS        += main.o init.o title.o game.o score.o audio.o bg.o text.o unifont.o path.o
               
-HEADERS     += main.h init.h platform.h title.h game.h score.h audio.h bg.h text.h unifont.h
+HEADERS     += main.h init.h platform.h title.h game.h score.h audio.h bg.h text.h unifont.h path.h
 
 INCLUDE     := -I.
 DEFS        +=

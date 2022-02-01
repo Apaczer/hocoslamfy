@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/opendingux/mipsel-gcw0-linux-uclibc/include",
+                "/opt/opendingux/mipsel-gcw0-linux-uclibc/sysroot/usr/include/*",
+                "/opt/opendingux/mipsel-gcw0-linux-uclibc/sysroot/usr/include/SDL/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

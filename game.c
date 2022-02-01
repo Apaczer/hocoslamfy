@@ -94,6 +94,10 @@ void GameGatherInput(bool* Continue)
 			*Continue = false;
 			return;
 		}
+		else if (IsScreenshotEvent(&ev))
+		{
+			MakeScreenshot();
+		}
 	}
 }
 
