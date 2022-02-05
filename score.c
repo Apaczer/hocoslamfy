@@ -40,6 +40,13 @@ static bool  WaitingForRelease = false;
 static char* ScoreMessage      = NULL;
 static const char* HighScoreFilePath = "highscore";
 
+static const char users[1][10] =
+{
+	"User 01"
+};
+
+static int currentUser = 0;
+
 void ScoreGatherInput(bool* Continue)
 {
 	SDL_Event ev;
@@ -69,6 +76,27 @@ void ScoreGatherInput(bool* Continue)
 			}
 			return;
 		}
+		else if (IsLeftEvent(&ev))
+		{
+			if (currentUser == 0)
+			{
+				currentUser = sizeof(users) / sizeof(char[10]) - 1;
+			}
+			else
+			{
+				currentUser--;
+			}
+		}
+		else if (IsRightEvent(&ev))
+		{
+			if (currentUser == sizeof(users) / sizeof(char[10]) - 1)
+			{
+				currentUser = 0;
+			}
+			else {
+				currentUser++;
+			}
+		}
 		else if (IsScreenshotEvent(&ev))
 		{
 			MakeScreenshot();
@@ -87,7 +115,7 @@ void ScoreOutputFrame()
 
 	SDL_Rect HeaderDestRect = {
 		.x = (SCREEN_WIDTH - GameOverFrame->w) / 2,
-		.y = ((SCREEN_HEIGHT / 4) - GameOverFrame->h) / 2,
+		.y = ((SCREEN_HEIGHT / 6) - GameOverFrame->h) / 2,
 		.w = GameOverFrame->w,
 		.h = GameOverFrame->h
 	};
@@ -99,8 +127,27 @@ void ScoreOutputFrame()
 	};
 	SDL_BlitSurface(GameOverFrame, &HeaderSourceRect, Screen, &HeaderDestRect);
 
+	RenderLeft((SCREEN_WIDTH / 2) - 80 - 16 - 2, (SCREEN_HEIGHT / 6) + ((SCREEN_HEIGHT / 12) - 5));
+	RenderRight((SCREEN_WIDTH / 2) + 80 + 2, (SCREEN_HEIGHT / 6) + ((SCREEN_HEIGHT / 12) - 5));
+
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
+#ifdef USE_16BPP		
+	PrintStringOutline16(users[currentUser],
+#else
+	PrintStringOutline32(users[currentUser],
+#endif
+		SDL_MapRGB(Screen->format, 255, 255, 255),
+		SDL_MapRGB(Screen->format, 0, 0, 0),
+		Screen->pixels,
+		Screen->pitch,
+		0,
+		(SCREEN_HEIGHT / 6) + ((SCREEN_HEIGHT / 12) - 6),
+		SCREEN_WIDTH,
+		18,
+		CENTER,
+		MIDDLE);
+
 #ifdef USE_16BPP		
 	PrintStringOutline16(ScoreMessage,
 #else
@@ -111,9 +158,9 @@ void ScoreOutputFrame()
 		Screen->pixels,
 		Screen->pitch,
 		0,
-		SCREEN_HEIGHT / 4,
+		(SCREEN_HEIGHT / 6) * 2,
 		SCREEN_WIDTH,
-		SCREEN_HEIGHT - (SCREEN_HEIGHT / 4),
+		SCREEN_HEIGHT - ((SCREEN_HEIGHT / 6) * 2),
 		CENTER,
 		MIDDLE);
 	if (SDL_MUSTLOCK(Screen))

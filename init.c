@@ -185,6 +185,11 @@ void Initialize(bool* Continue, bool* Error)
 		return;
 	if ((GameOverFrame = ConvertSurface(Continue, Error, GameOverFrame, "GameOverHeader.png")) == NULL)
 		return;
+	ArrowFrames = LoadImage("Arrow.png");
+	if (!CheckImage(Continue, Error, ArrowFrames, "Arrow.png"))
+		return;
+	if ((ArrowFrames = ConvertSurface(Continue, Error, ArrowFrames, "Arrow.png")) == NULL)
+		return;
 
 	InitializePlatform();
 
@@ -254,6 +259,8 @@ void Finalize()
 	CollisionImage = NULL;
 	SDL_FreeSurface(GameOverFrame);
 	GameOverFrame = NULL;
+	SDL_FreeSurface(ArrowFrames);
+	ArrowFrames = NULL;
 
 #ifndef NO_SHAKE
 	Shake_Stop(device, flap_effect_id);
@@ -282,4 +289,41 @@ void MakeScreenshot()
 	SDL_SaveBMP(Screen, path);
 	if (SDL_MUSTLOCK(Screen))
 		SDL_UnlockSurface(Screen);
+}
+
+void RenderArrow(int x, int y, int offset)
+{
+	SDL_Rect HeaderDestRect = {
+		.x = x,
+		.y = y,
+		.w = 16,
+		.h = 16
+	};
+	SDL_Rect HeaderSourceRect = {
+		.x = offset,
+		.y = 0,
+		.w = 16,
+		.h = 16
+	};
+	SDL_BlitSurface(ArrowFrames, &HeaderSourceRect, Screen, &HeaderDestRect);
+}
+
+void RenderUp(int x, int y)
+{
+	RenderArrow(x, y, 0);
+}
+
+void RenderDown(int x, int y)
+{
+	RenderArrow(x, y, 16);
+}
+
+void RenderLeft(int x, int y)
+{
+	RenderArrow(x, y, 32);
+}
+
+void RenderRight(int x, int y)
+{
+	RenderArrow(x, y, 48);
 }

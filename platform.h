@@ -61,3 +61,8 @@ const char* GetScoreTogglePrompt(void);
 
 bool IsScreenshotEvent(const SDL_Event* event);
 const char* GetScreenshotPrompt(void);
+
+bool IsLeftEvent(const SDL_Event* event);
+bool IsRightEvent(const SDL_Event* event);
+bool IsUpEvent(const SDL_Event* event);
+bool IsDownEvent(const SDL_Event* event);

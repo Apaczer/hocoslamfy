@@ -49,8 +49,13 @@ extern int flap_effect_id, flap_effect_id1, crash_effect_id;
 
 #endif
 
-extern void MakeScreenshot(void);
 void Initialize(bool* Continue, bool* Error);
 void Finalize(void);
+
+extern void MakeScreenshot(void);
+extern void RenderUp(int x, int y);
+extern void RenderDown(int x, int y);
+extern void RenderLeft(int x, int y);
+extern void RenderRight(int x, int y);
 
 #endif /* !defined(_INIT_H_) */

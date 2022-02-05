@@ -38,6 +38,7 @@ SDL_Surface* CharacterFrames                      	= NULL;
 SDL_Surface* ColumnImage                          	= NULL;
 SDL_Surface* CollisionImage                       	= NULL;
 SDL_Surface* GameOverFrame                        	= NULL;
+SDL_Surface* ArrowFrames							= NULL;
 
 TGatherInput GatherInput;
 TDoLogic     DoLogic;

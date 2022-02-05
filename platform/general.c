@@ -125,3 +125,27 @@ const char* GetScreenshotPrompt(void)
 {
 	return "PageDown";
 }
+
+bool IsLeftEvent(const SDL_Event* event)
+{
+	return event->type == SDL_KEYDOWN
+	    && event->key.keysym.sym == SDLK_LEFT;
+}
+
+bool IsRightEvent(const SDL_Event* event)
+{
+	return event->type == SDL_KEYDOWN
+	    && event->key.keysym.sym == SDLK_RIGHT;
+}
+
+bool IsUpEvent(const SDL_Event* event)
+{
+	return event->type == SDL_KEYDOWN
+	    && event->key.keysym.sym == SDLK_UP;
+}
+
+bool IsDownEvent(const SDL_Event* event)
+{
+	return event->type == SDL_KEYDOWN
+	    && event->key.keysym.sym == SDLK_DOWN;
+}

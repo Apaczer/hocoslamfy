@@ -44,5 +44,6 @@ extern SDL_Surface* GameOverFrame;
 extern TGatherInput GatherInput;
 extern TDoLogic     DoLogic;
 extern TOutputFrame OutputFrame;
+extern SDL_Surface* ArrowFrames;
 
 #endif /* !defined(_MAIN_H_) */
