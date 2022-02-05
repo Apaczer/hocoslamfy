@@ -25,6 +25,10 @@
 #include "init.h"
 #include "platform.h"
 
+#include "log.c/src/log.h"
+#include "path.h"
+FILE *logFile;
+
 static bool  Continue                          		= true;
 static bool  Error                             		= false;
 
@@ -44,8 +48,35 @@ TGatherInput GatherInput;
 TDoLogic     DoLogic;
 TOutputFrame OutputFrame;
 
+void CleanUp()
+{
+	log_trace("CleanUp called");
+	Finalize();
+
+	GatherInput = NULL;
+	DoLogic = NULL;
+	OutputFrame = NULL;
+
+#if LOGGING
+	if (logFile)
+	{
+		fclose(logFile);
+	}
+#endif
+}
+
 int main(int argc, char* argv[])
 {
+#if LOGGING
+	char logFileName[256];
+	GetFullPath(logFileName, "hocoslamfy.log");
+	logFile = fopen(logFileName, "a");
+	if (logFile)
+	{
+		log_add_fp(logFile, LOG_TRACE);
+	}
+#endif
+
 	Initialize(&Continue, &Error);
 	Uint32 Duration = 16;
 	while (Continue)
@@ -59,11 +90,8 @@ int main(int argc, char* argv[])
 		OutputFrame();
 		Duration = ToNextFrame();
 	}
-	Finalize();
 
-	GatherInput = NULL;
-	DoLogic = NULL;
-	OutputFrame = NULL;
+	atexit(CleanUp);
 
 	return Error ? 1 : 0;
 }

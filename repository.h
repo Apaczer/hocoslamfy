@@ -1,5 +1,5 @@
 /*
- * Hocoslamfy, path helper functions, header
+ * Hocoslamfy, main program file
  * Copyright (C) 2014 Nebuleon Fumika <nebuleon@gcw-zero.com>
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,9 +17,5 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef _PATH_H_
-#define _PATH_H_
-
-extern void GetFullPath(char* path, const char* filename);
-
-#endif /* !defined(_PATH_H_) */
+extern void InitializeRepository(bool* Continue, bool* Error);
+extern void FinalizeRepository(void);

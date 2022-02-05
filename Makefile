@@ -3,8 +3,8 @@ TARGET      ?= hocoslamfy-od
 ifeq ($(TARGET), hocoslamfy-gcw0)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o
-  DEFS      := -DOPK -DUSE_HOME -DUSE_16BPP
+  OBJS       = platform/opendingux.o log.c/src/log.o
+  DEFS      := -DOPK -DUSE_HOME -DUSE_16BPP -DLOGGING
   FLAGS     := -lshake
   DEVICE    := gcw0
 else
@@ -42,16 +42,16 @@ SDL_CONFIG  ?= $(SYSROOT)/usr/bin/sdl-config
 SDL_CFLAGS  := $(shell $(SDL_CONFIG) --cflags)
 SDL_LIBS    := $(shell $(SDL_CONFIG) --libs)
 
-OBJS        += main.o init.o title.o game.o score.o audio.o bg.o text.o unifont.o path.o
+OBJS        += main.o init.o title.o game.o score.o audio.o bg.o text.o unifont.o path.o sqlite.o
               
-HEADERS     += main.h init.h platform.h title.h game.h score.h audio.h bg.h text.h unifont.h path.h
+HEADERS     += main.h init.h platform.h title.h game.h score.h audio.h bg.h text.h unifont.h path.h repository.h log.c/src/log.h
 
 INCLUDE     := -I.
 DEFS        +=
 
 CFLAGS       = $(SDL_CFLAGS) -Wall -Wno-unused-variable \
                -O2 -fomit-frame-pointer $(DEFS) $(INCLUDE)
-LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer $(FLAGS)
+LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer -lsqlite3 $(FLAGS)
 
 ifneq (, $(findstring MINGW, $(shell uname -s)))
 	CFLAGS+=-DDONT_USE_PWD
