@@ -3,15 +3,15 @@ TARGET      ?= hocoslamfy-od
 ifeq ($(TARGET), hocoslamfy-gcw0)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o log.c/src/log.o
-  DEFS      := -DOPK -DUSE_HOME -DLOGGING
-  FLAGS     := -lshake
+  OBJS       = platform/opendingux.o log.c/src/log.o textttf.o
+  DEFS      := -DOPK -DUSE_HOME -DSCREEN_BPP=16 -DLOGGING
+  FLAGS     := -lshake -lSDL_ttf
   DEVICE    := gcw0
 else
 ifeq ($(TARGET), hocoslamfy-lepus)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o
+  OBJS       = platform/opendingux.o text.o
   DEFS      := -DOPK -DNO_SHAKE
   FLAGS     := 
   DEVICE    := lepus
@@ -19,7 +19,7 @@ else
 ifeq ($(TARGET), hocoslamfy-rs90)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o
+  OBJS       = platform/opendingux.o text.o
   DEFS      := -DOPK -DSCREEN_WIDTH=240 -DSCREEN_HEIGHT=160 -DSCREEN_BPP=16 -DNO_SHAKE
   FLAGS     := 
   DEVICE    := rs90
@@ -27,7 +27,7 @@ else
 ifeq ($(TARGET), hocoslamfy)
   CC        := gcc
   STRIP     := strip
-  OBJS       = platform/general.o
+  OBJS       = platform/general.o text.o
   DEFS      := 
   FLAGS     := 
 else
@@ -42,7 +42,7 @@ SDL_CONFIG  ?= $(SYSROOT)/usr/bin/sdl-config
 SDL_CFLAGS  := $(shell $(SDL_CONFIG) --cflags)
 SDL_LIBS    := $(shell $(SDL_CONFIG) --libs)
 
-OBJS        += main.o init.o title.o game.o score.o audio.o bg.o text.o unifont.o path.o sqlite.o
+OBJS        += main.o init.o title.o game.o score.o audio.o bg.o unifont.o path.o sqlite.o
               
 HEADERS     += main.h init.h platform.h title.h game.h score.h audio.h bg.h text.h unifont.h path.h repository.h log.c/src/log.h
 
@@ -80,6 +80,7 @@ $(TARGET).opk: $(TARGET) $(OGGS)
 	$(CMD)mkdir -p .opk_data
 	$(CMD)cp data/default.$(DEVICE).desktop .opk_data/
 	$(CMD)cp data/*.png .opk_data/
+	$(CMD)cp data/*.ttf .opk_data/
 	$(CMD)cp $(OGGS) .opk_data/
 	$(CMD)cp data/*.txt .opk_data/
 	$(CMD)cp COPYRIGHT .opk_data/COPYRIGHT

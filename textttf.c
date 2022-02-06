@@ -20,16 +20,19 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "SDL/SDL_ttf.h"
 
 #include "text.h"
 #include "unifont.h"
 
 void InitializeText(bool* Continue, bool* Error)
 {
+	TTF_Init();
 }
 
 void FinalizeText()
 {
+	TTF_Quit();
 }
 
 static uint32_t CutString(const char* String, const uint32_t MaxWidth,

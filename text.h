@@ -39,32 +39,28 @@ struct StringCut {
 	uint32_t End;    // Ending character index of the cut, exclusive.
 };
 
-void PrintString16(const char* String, uint16_t TextColor,
-	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
-	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
-
-void PrintStringOutline16(const char* String, uint16_t TextColor, uint16_t OutlineColor,
-	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
-	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
-
-void PrintString32(const char* String, uint32_t TextColor,
-	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
-	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
-
-void PrintStringOutline32(const char* String, uint32_t TextColor, uint32_t OutlineColor,
-	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
-	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
-
 extern uint32_t GetRenderedWidth(const char* str);
-
 extern uint32_t GetRenderedHeight(const char* str);
 
+extern void InitializeText(bool* Continue, bool* Error);
+extern void FinalizeText(void);
+
 #if SCREEN_BPP == 16
-#define PrintString            PrintString16
-#define PrintStringOutline     PrintStringOutline16
+extern void PrintString(const char* String, uint16_t TextColor,
+	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
+	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
+
+extern void PrintStringOutline(const char* String, uint16_t TextColor, uint16_t OutlineColor,
+	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
+	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
 #else
-#define PrintString            PrintString32
-#define PrintStringOutline     PrintStringOutline32
+extern void PrintString(const char* String, uint32_t TextColor,
+	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
+	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
+
+extern void PrintStringOutline(const char* String, uint32_t TextColor, uint32_t OutlineColor,
+	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
+	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
 #endif
 
 #endif /* !defined(_TEXT_H_) */
