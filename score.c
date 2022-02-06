@@ -132,11 +132,7 @@ void ScoreOutputFrame()
 
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
-#ifdef USE_16BPP		
-	PrintStringOutline16(users[currentUser],
-#else
-	PrintStringOutline32(users[currentUser],
-#endif
+	PrintStringOutline(users[currentUser],
 		SDL_MapRGB(Screen->format, 255, 255, 255),
 		SDL_MapRGB(Screen->format, 0, 0, 0),
 		Screen->pixels,
@@ -148,11 +144,7 @@ void ScoreOutputFrame()
 		CENTER,
 		MIDDLE);
 
-#ifdef USE_16BPP		
-	PrintStringOutline16(ScoreMessage,
-#else
-	PrintStringOutline32(ScoreMessage,	
-#endif
+	PrintStringOutline(ScoreMessage,	
 		SDL_MapRGB(Screen->format, 255, 255, 255),
 		SDL_MapRGB(Screen->format, 0, 0, 0),
 		Screen->pixels,

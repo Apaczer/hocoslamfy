@@ -161,11 +161,7 @@ void TitleScreenOutputFrame()
 
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
-#ifdef USE_16BPP		
-	PrintStringOutline16(WelcomeMessage,
-#else
-	PrintStringOutline32(WelcomeMessage,
-#endif
+	PrintStringOutline(WelcomeMessage,
 		SDL_MapRGB(Screen->format, 255, 255, 255),
 		SDL_MapRGB(Screen->format, 0, 0, 0),
 		Screen->pixels,

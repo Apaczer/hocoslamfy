@@ -4,7 +4,7 @@ ifeq ($(TARGET), hocoslamfy-gcw0)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o log.c/src/log.o
-  DEFS      := -DOPK -DUSE_HOME -DUSE_16BPP -DLOGGING
+  DEFS      := -DOPK -DUSE_HOME -DLOGGING
   FLAGS     := -lshake
   DEVICE    := gcw0
 else

@@ -390,11 +390,7 @@ if (!FollowBee) {
 				RectScoreColor = SDL_MapRGB(Screen->format, 64, 255, 64); // green
 			else
 				RectScoreColor = SDL_MapRGB(Screen->format, 255, 255, 255); // white
-#ifdef USE_16BPP			
-			PrintStringOutline16(RectScoreString,
-#else
-			PrintStringOutline32(RectScoreString,	
-#endif
+			PrintStringOutline(RectScoreString,	
 				RectScoreColor,
 				SDL_MapRGB(Screen->format, 0, 0, 0),
 				Screen->pixels,
@@ -447,11 +443,7 @@ if (FollowBee) {
 
 			if (PlayerDestRect.y + PlayerDestRect.h - 8 + RenderedHeight < SCREEN_HEIGHT)
 			{
-#ifdef USE_16BPP			
-				PrintStringOutline16(RectScoreString,
-#else
-				PrintStringOutline32(RectScoreString,	
-#endif
+				PrintStringOutline(RectScoreString,	
 					RectScoreColor,
 					SDL_MapRGB(Screen->format, 0, 0, 0),
 					Screen->pixels,

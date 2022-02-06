@@ -125,7 +125,7 @@ void Initialize(bool* Continue, bool* Error)
 		return;
 	SDL_WM_SetIcon(WindowIcon, NULL);
 	SDL_WM_SetCaption("hocoslamfy", "hocoslamfy");
-#ifdef USE_16BPP
+#if SCREEN_BPP == 16
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16, SDL_HWSURFACE |
 #else
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE |
