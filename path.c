@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #ifndef DONT_USE_PWD
 #include <pwd.h>
+#include <unistd.h>
 #endif
 
 static const char* SavePath = ".hocoslamfy";

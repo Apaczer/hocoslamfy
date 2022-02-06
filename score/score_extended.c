@@ -25,6 +25,7 @@
 #include <sys/types.h>
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_ttf.h>
 
 #include "main.h"
 #include "init.h"
@@ -130,8 +131,35 @@ void ScoreOutputFrame()
 	RenderLeft((SCREEN_WIDTH / 2) - 80 - 16 - 2, (SCREEN_HEIGHT / 6) + ((SCREEN_HEIGHT / 12) - 5));
 	RenderRight((SCREEN_WIDTH / 2) + 80 + 2, (SCREEN_HEIGHT / 6) + ((SCREEN_HEIGHT / 12) - 5));
 
+	char fontFilePath[256];
+	snprintf(fontFilePath, 256, DATA_PATH "%s", "ProFont.ttf");
+
+	// load font and its outline
+	TTF_Font* font = TTF_OpenFont(fontFilePath, 10);
+	TTF_Font* font_outline = TTF_OpenFont(fontFilePath, 10); 
+	TTF_SetFontOutline(font_outline, 1); 
+
+	// render text and text outline
+	SDL_Color white = {0xFF, 0xFF, 0xFF}; 
+	SDL_Color black = {0x00, 0x00, 0x00}; 
+	SDL_Surface *bg_surface = TTF_RenderText_Blended(font_outline, users[currentUser], black); 
+	SDL_Surface *fg_surface = TTF_RenderText_Blended(font, users[currentUser], white); 
+	SDL_Rect rect = {1, 1, fg_surface->w, fg_surface->h}; 
+
+	// blit text onto its outline
+	SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect); 
+	SDL_FreeSurface(fg_surface); 
+
+	// we now have RGBA white text with black outline in bg_surface
+	SDL_Rect dstrect = { 10, 10, bg_surface->w, bg_surface->h };
+	SDL_BlitSurface(bg_surface, NULL, Screen, &dstrect);
+	SDL_FreeSurface(bg_surface);
+	TTF_CloseFont(font_outline);
+	TTF_CloseFont(font);
+
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
+/*
 	PrintStringOutline(users[currentUser],
 		SDL_MapRGB(Screen->format, 255, 255, 255),
 		SDL_MapRGB(Screen->format, 0, 0, 0),
@@ -143,8 +171,9 @@ void ScoreOutputFrame()
 		18,
 		CENTER,
 		MIDDLE);
+*/
 
-	PrintStringOutline(ScoreMessage,	
+	PrintStringOutline(ScoreMessage,
 		SDL_MapRGB(Screen->format, 255, 255, 255),
 		SDL_MapRGB(Screen->format, 0, 0, 0),
 		Screen->pixels,
