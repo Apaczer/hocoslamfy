@@ -41,6 +41,61 @@ static bool  WaitingForRelease = false;
 static char* ScoreMessage      = NULL;
 static const char* HighScoreFilePath = "highscore";
 
+void SaveHighScore(uint32_t Score)
+{
+	char path[256];
+	GetFullPath(path, HighScoreFilePath);
+
+	FILE *fp = fopen(path, "w");
+
+	if (!fp)
+	{
+		fprintf(stderr, "%s: Unable to open file.\n", path);
+		return;
+	}
+
+	fprintf(fp, "%" PRIu32, Score);
+	fclose(fp);
+}
+
+void GetFileLine(char *str, uint32_t size, FILE *fp)
+{
+	int i = 0;
+	for (i = 0; i < size - 1; i++)
+	{
+		int c = fgetc(fp);
+		if (c == EOF || c == '\n')
+		{
+			str[i] = '\0';
+			break;
+		}
+		str[i] = c;
+	}
+	str[size - 1] = '\0';
+}
+
+uint32_t GetHighScore()
+{
+	char path[256];
+	GetFullPath(path, HighScoreFilePath);
+
+	FILE *fp = fopen(path, "r");
+
+	if (!fp)
+		return 0;
+
+	char line[256];
+	GetFileLine(line, 256, fp);
+	fclose(fp);
+	fp = NULL;
+	
+	uint32_t hs = 0;
+	if (sscanf(line, "%" SCNu32, &hs) != 1)
+		return 0;
+
+	return hs;
+}
+
 void ScoreGatherInput(bool* Continue)
 {
 	SDL_Event ev;
@@ -119,8 +174,20 @@ void ScoreOutputFrame()
 	SDL_Flip(Screen);
 }
 
-void ToScore(uint32_t Score, enum GameOverReason GameOverReason, uint32_t HighScore)
+void ToScore(uint32_t Score, enum GameOverReason GameOverReason)
 {
+	uint32_t highScore = GetHighScore();
+	const char *MaybeNew;
+	if (Score > highScore)
+	{
+		MaybeNew = "NEW ";
+		PlaySFXHighScore();
+		SaveHighScore(Score);
+		highScore = Score;
+	} else {
+		MaybeNew = "";
+	}
+
 	if (ScoreMessage != NULL)
 	{
 		free(ScoreMessage);
@@ -148,16 +215,6 @@ void ToScore(uint32_t Score, enum GameOverReason GameOverReason, uint32_t HighSc
 			break;
 	}
 
-	const char *MaybeNew;
-	if (Score > HighScore)
-	{
-		MaybeNew = "NEW ";
-		HighScore = Score;
-		PlaySFXHighScore();
-	} else {
-		MaybeNew = "";
-	}
-
 	while ((NewLength = snprintf(ScoreMessage, Length,
 		"%s\n\n"
 #if SCREEN_HEIGHT < 240
@@ -167,7 +224,7 @@ void ToScore(uint32_t Score, enum GameOverReason GameOverReason, uint32_t HighSc
 		"%sHigh Score: %" PRIu32 "\n\n"
 #endif
 		"Press %s to play again\nor %s to exit",
-		GameOverReasonString, Score, MaybeNew, HighScore,
+		GameOverReasonString, Score, MaybeNew, highScore,
 		GetEnterGamePrompt(), GetExitGamePrompt())
 		) >= Length)
 	{
@@ -178,59 +235,4 @@ void ToScore(uint32_t Score, enum GameOverReason GameOverReason, uint32_t HighSc
 	GatherInput = ScoreGatherInput;
 	DoLogic     = ScoreDoLogic;
 	OutputFrame = ScoreOutputFrame;
-}
-
-void SaveHighScore(uint32_t Score)
-{
-	char path[256];
-	GetFullPath(path, HighScoreFilePath);
-
-	FILE *fp = fopen(path, "w");
-
-	if (!fp)
-	{
-		fprintf(stderr, "%s: Unable to open file.\n", path);
-		return;
-	}
-
-	fprintf(fp, "%" PRIu32, Score);
-	fclose(fp);
-}
-
-void GetFileLine(char *str, uint32_t size, FILE *fp)
-{
-	int i = 0;
-	for (i = 0; i < size - 1; i++)
-	{
-		int c = fgetc(fp);
-		if (c == EOF || c == '\n')
-		{
-			str[i] = '\0';
-			break;
-		}
-		str[i] = c;
-	}
-	str[size - 1] = '\0';
-}
-
-uint32_t GetHighScore()
-{
-	char path[256];
-	GetFullPath(path, HighScoreFilePath);
-
-	FILE *fp = fopen(path, "r");
-
-	if (!fp)
-		return 0;
-
-	char line[256];
-	GetFileLine(line, 256, fp);
-	fclose(fp);
-	fp = NULL;
-	
-	uint32_t hs = 0;
-	if (sscanf(line, "%" SCNu32, &hs) != 1)
-		return 0;
-
-	return hs;
 }

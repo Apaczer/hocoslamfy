@@ -19,12 +19,15 @@
 
 extern void InitializeRepository(bool* Continue, bool* Error);
 extern void FinalizeRepository(void);
+extern int UpdateCurrentPlayer(int playerId);
+extern int UpdateHighscore(int playerId, int highscore);
 
 typedef struct
 {
     int PlayerId;
     char* PlayerName;
     int Highscore;
+    bool CurrentPlayer;
 } Player;
 
 typedef struct
@@ -32,3 +35,5 @@ typedef struct
     Player* list;
     int count;
 } ListOfPlayer;
+
+extern ListOfPlayer Players;

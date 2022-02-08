@@ -31,11 +31,12 @@
 
 static sqlite3* db;
 static char* version = "0";
+ListOfPlayer Players;
 
 static int ReadPlayersList(ListOfPlayer* players)
 {
     sqlite3_stmt* res;
-    int rc = sqlite3_prepare_v2(db, "SELECT player_id, player_name, player_highscore FROM player;", -1, &res, 0);    
+    int rc = sqlite3_prepare_v2(db, "SELECT player_id, player_name, player_highscore, current_player FROM player;", -1, &res, 0);
     if (rc != SQLITE_OK) {
         log_error("Failed to fetch data: %s\n", sqlite3_errmsg(db));
         return 1;
@@ -64,7 +65,8 @@ static int ReadPlayersList(ListOfPlayer* players)
         Player player = {
             .PlayerId = sqlite3_column_int(res, 0),
             .PlayerName = playerName,
-            .Highscore = sqlite3_column_int(res, 2)
+            .Highscore = sqlite3_column_int(res, 2),
+            .CurrentPlayer = sqlite3_column_int(res, 3)
         };
 
         players->list[players->count++] = player;
@@ -79,8 +81,11 @@ static void FreePlayersList(ListOfPlayer* players)
     for (int i = 0; i < players->count; i++)
     {
         free(players->list[i].PlayerName);
+        players->list[i].PlayerName = NULL;
     }
     free(players->list);
+    players->list = NULL;
+    players->count = 0;
 }
 
 static void UpgradeToVersion1_0_0(bool* Continue, bool* Error)
@@ -99,7 +104,7 @@ static void UpgradeToVersion1_0_0(bool* Continue, bool* Error)
     }
 
     uint32_t score = GetHighScore();
-    snprintf(statement, 1024, "CREATE TABLE player (player_id INTEGER PRIMARY KEY, player_name TEXT, player_highscore INTEGER); INSERT INTO player (player_name, player_highscore) VALUES ('%s', %d);", "Player1", score);
+    snprintf(statement, 1024, "CREATE TABLE player (player_id INTEGER PRIMARY KEY, player_name TEXT, player_highscore INTEGER, current_player INTEGER); INSERT INTO player (player_name, player_highscore, current_player) VALUES ('%s', %d, 1);", "Player1", score);
     rc = sqlite3_exec(db, statement, NULL, 0, &zErrMsg);
     if (rc != SQLITE_OK)
     {
@@ -159,14 +164,12 @@ void InitializeRepository(bool* Continue, bool* Error)
 
     UpgradeIfRequired(Continue, Error);
 
-    ListOfPlayer players;
-    if (ReadPlayersList(&players) == 0 && players.list && players.count)
+    if (ReadPlayersList(&Players) == 0 && Players.list && Players.count)
     {
-        for (int i = 0; i < players.count; i++)
+        for (int i = 0; i < Players.count; i++)
         {
-            log_debug("Player %s found, Id: %d, Highscore: %d", players.list[i].PlayerName, players.list[i].PlayerId, players.list[i].Highscore);
+            log_debug("Player %s found, Id: %d, Highscore: %d", Players.list[i].PlayerName, Players.list[i].PlayerId, Players.list[i].Highscore);
         }
-        FreePlayersList(&players);
     }
 
     log_trace("InitializeRepository finished");
@@ -174,5 +177,52 @@ void InitializeRepository(bool* Continue, bool* Error)
 
 void FinalizeRepository(void)
 {
+    FreePlayersList(&Players);
     sqlite3_close(db);
+}
+
+int UpdateCurrentPlayer(int playerId)
+{
+    char *zErrMsg = 0;
+    char statement[1024];
+    snprintf(statement, 1024, "UPDATE player SET current_player = CASE WHEN player_id = %d THEN 1 ELSE 0 END;", playerId);
+    int rc = sqlite3_exec(db, statement, NULL, 0, &zErrMsg);
+    if (rc != SQLITE_OK)
+    {
+        log_error("SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+        return 1;
+    }
+
+    for (int i = 0; i < Players.count; i++)
+    {
+        Players.list[i].CurrentPlayer = Players.list[i].PlayerId == playerId;
+    }
+
+    return 0;
+}
+
+int UpdateHighscore(int playerId, int highscore)
+{
+    char *zErrMsg = 0;
+    char statement[1024];
+    snprintf(statement, 1024, "UPDATE player SET player_highscore = %d WHERE player_id = %d;", playerId, highscore);
+    int rc = sqlite3_exec(db, statement, NULL, 0, &zErrMsg);
+    if (rc != SQLITE_OK)
+    {
+        log_error("SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+        return 1;
+    }
+
+    for (int i = 0; i < Players.count; i++)
+    {
+        if (Players.list[i].PlayerId == playerId)
+        {
+            Players.list[i].Highscore = highscore;
+            break;
+        }
+    }
+
+    return 0;
 }

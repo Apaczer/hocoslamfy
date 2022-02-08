@@ -320,12 +320,7 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 			PlayerY += PlayerSpeed / 1000;
 			if (PlayerY < 0.0f)
 			{
-				uint32_t HighScore = GetHighScore();
-				
-				ToScore(Score, GameOverReason, HighScore);
-				
-				if (Score > HighScore)
-					SaveHighScore(Score);
+				ToScore(Score, GameOverReason);
 				return;
 			}
 		}
