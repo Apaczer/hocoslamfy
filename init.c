@@ -33,8 +33,12 @@
 #include "platform.h"
 #include "title.h"
 #include "path.h"
-#include "repository.h"
 #include "text.h"
+
+#ifdef USE_DATABASE
+#include "repository.h"
+#endif
+
 #ifndef NO_SHAKE
 #include <shake.h>
 
@@ -111,7 +115,6 @@ static SDL_Surface* ConvertSurface(bool* Continue, bool* Error, SDL_Surface* Sou
 
 void Initialize(bool* Continue, bool* Error)
 {
-	InitializeRepository(Continue, Error);
 	InitializeText(Continue, Error);
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
@@ -238,12 +241,17 @@ void Initialize(bool* Continue, bool* Error)
 		StartBGM();
 
 
+#ifdef USE_DATABASE
+	InitializeRepository(Continue, Error);
+#endif
 	ToTitleScreen();
 }
 
 void Finalize()
 {
+#ifdef USE_DATABASE
 	FinalizeRepository();
+#endif
 	FinalizeText();
 
 	uint32_t i;

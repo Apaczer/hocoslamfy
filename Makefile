@@ -4,14 +4,15 @@ ifeq ($(TARGET), hocoslamfy-gcw0)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o text/text_ttf.o repository/sqlite.o score/score_extended.o
-  DEFS      := -DOPK -DUSE_HOME -DSCREEN_BPP=16 -DLOGGING
+  HEADERS    = repository.h
+  DEFS      := -DOPK -DUSE_HOME -DSCREEN_BPP=16 -DLOGGING -DUSE_DATABASE
   FLAGS     := -lshake -lSDL_ttf
   DEVICE    := gcw0
 else
 ifeq ($(TARGET), hocoslamfy-gcw0-v1)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o text/text.o repository/file.o score/score.o
+  OBJS       = platform/opendingux.o text/text.o score/score.o
   DEFS      := -DOPK -DUSE_HOME -DSCREEN_BPP=16
   FLAGS     := -lshake
   DEVICE    := gcw0
@@ -19,7 +20,7 @@ else
 ifeq ($(TARGET), hocoslamfy-lepus)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o text/text.o repository/file.o score/score.o
+  OBJS       = platform/opendingux.o text/text.o score/score.o
   DEFS      := -DOPK -DNO_SHAKE
   FLAGS     := 
   DEVICE    := lepus
@@ -27,7 +28,7 @@ else
 ifeq ($(TARGET), hocoslamfy-rs90)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o text/text.o repository/file.o score/score.o
+  OBJS       = platform/opendingux.o text/text.o score/score.o
   DEFS      := -DOPK -DSCREEN_WIDTH=240 -DSCREEN_HEIGHT=160 -DSCREEN_BPP=16 -DNO_SHAKE
   FLAGS     := 
   DEVICE    := rs90
@@ -52,8 +53,8 @@ SDL_CFLAGS  := $(shell $(SDL_CONFIG) --cflags)
 SDL_LIBS    := $(shell $(SDL_CONFIG) --libs)
 
 OBJS        += main.o init.o title.o game.o audio.o bg.o unifont.o path.o log.c/src/log.o
-              
-HEADERS     += main.h init.h platform.h title.h game.h score.h audio.h bg.h text.h unifont.h path.h repository.h log.c/src/log.h
+
+HEADERS     += main.h init.h platform.h title.h game.h score.h audio.h bg.h text.h unifont.h path.h log.c/src/log.h
 
 INCLUDE     := -I.
 DEFS        +=
