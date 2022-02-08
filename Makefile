@@ -1,17 +1,25 @@
-TARGET      ?= hocoslamfy-od
+TARGET      ?= hocoslamfy-gcw0
 
 ifeq ($(TARGET), hocoslamfy-gcw0)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o text_ttf.o repository/sqlite.o score/score_extended.o
+  OBJS       = platform/opendingux.o text/text_ttf.o repository/sqlite.o score/score_extended.o
   DEFS      := -DOPK -DUSE_HOME -DSCREEN_BPP=16 -DLOGGING
   FLAGS     := -lshake -lSDL_ttf
+  DEVICE    := gcw0
+else
+ifeq ($(TARGET), hocoslamfy-gcw0-v1)
+  CC        := mipsel-linux-gcc
+  STRIP     := mipsel-linux-strip
+  OBJS       = platform/opendingux.o text/text.o repository/file.o score/score.o
+  DEFS      := -DOPK -DUSE_HOME -DSCREEN_BPP=16
+  FLAGS     := -lshake
   DEVICE    := gcw0
 else
 ifeq ($(TARGET), hocoslamfy-lepus)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o text.o repository/file.o score/score.o
+  OBJS       = platform/opendingux.o text/text.o repository/file.o score/score.o
   DEFS      := -DOPK -DNO_SHAKE
   FLAGS     := 
   DEVICE    := lepus
@@ -19,7 +27,7 @@ else
 ifeq ($(TARGET), hocoslamfy-rs90)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
-  OBJS       = platform/opendingux.o text.o repository/file.o score/score.o
+  OBJS       = platform/opendingux.o text/text.o repository/file.o score/score.o
   DEFS      := -DOPK -DSCREEN_WIDTH=240 -DSCREEN_HEIGHT=160 -DSCREEN_BPP=16 -DNO_SHAKE
   FLAGS     := 
   DEVICE    := rs90
@@ -32,6 +40,7 @@ ifeq ($(TARGET), hocoslamfy)
   FLAGS     := 
 else
   $(error Unknown target: $(TARGET))
+endif
 endif
 endif
 endif

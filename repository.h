@@ -19,3 +19,16 @@
 
 extern void InitializeRepository(bool* Continue, bool* Error);
 extern void FinalizeRepository(void);
+
+typedef struct
+{
+    int PlayerId;
+    char* PlayerName;
+    int Highscore;
+} Player;
+
+typedef struct
+{
+    Player* list;
+    int count;
+} ListOfPlayer;

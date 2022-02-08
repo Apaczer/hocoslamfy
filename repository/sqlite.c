@@ -18,49 +18,117 @@
  */
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sqlite3.h>
 
 #include "log.c/src/log.h"
 #include "path.h"
+#include "score.h"
+#include "repository.h"
 
 static sqlite3* db;
 static char* version = "0";
 
-static void UpgradeToVersion1(bool* Continue, bool* Error)
+static int ReadPlayersList(ListOfPlayer* players)
 {
-    log_trace("UpgradeToVersion1 called");
+    sqlite3_stmt* res;
+    int rc = sqlite3_prepare_v2(db, "SELECT player_id, player_name, player_highscore FROM player;", -1, &res, 0);    
+    if (rc != SQLITE_OK) {
+        log_error("Failed to fetch data: %s\n", sqlite3_errmsg(db));
+        return 1;
+    }
 
-    char *zErrMsg = 0;
-    int rc = sqlite3_exec(db, "INSERT INTO version (version_number) VALUES ('1.0.0');", NULL, 0, &zErrMsg);
+    players->list = malloc(sizeof(Player));
+    players->count = 0;
+    while ((rc = sqlite3_step(res)) == SQLITE_ROW)
+    {
+        void* reallocated = realloc(players->list, sizeof(Player) * (players->count + 1));
+        if (reallocated == NULL)
+        {
+            log_error("Reallocation failed");
+            sqlite3_finalize(res);
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            players->list = reallocated;
+        }
+
+        char* raw = (char*)sqlite3_column_text(res, 1);
+        char* playerName = malloc(sizeof(char) * (int)sqlite3_column_bytes(res, 1));
+        strcpy(playerName, raw);
+
+        Player player = {
+            .PlayerId = sqlite3_column_int(res, 0),
+            .PlayerName = playerName,
+            .Highscore = sqlite3_column_int(res, 2)
+        };
+
+        players->list[players->count++] = player;
+    }
+
+    sqlite3_finalize(res);
+    return 0;
+}
+
+static void FreePlayersList(ListOfPlayer* players)
+{
+    for (int i = 0; i < players->count; i++)
+    {
+        free(players->list[i].PlayerName);
+    }
+    free(players->list);
+}
+
+static void UpgradeToVersion1_0_0(bool* Continue, bool* Error)
+{
+    char* targetVersion = "1.0.0";
+    char* zErrMsg = 0;
+    char statement[1024];
+    snprintf(statement, 1024, "INSERT INTO version (version_number) VALUES ('%s');", targetVersion);
+    int rc = sqlite3_exec(db, statement, NULL, 0, &zErrMsg);
     if (rc != SQLITE_OK)
     {
-        log_error("SQL error: %s\n", zErrMsg);
+        log_error("Create Version table, SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
         *Error = true;
         return;
     }
 
-    log_trace("UpgradeToVersion1 finished");
+    uint32_t score = GetHighScore();
+    snprintf(statement, 1024, "CREATE TABLE player (player_id INTEGER PRIMARY KEY, player_name TEXT, player_highscore INTEGER); INSERT INTO player (player_name, player_highscore) VALUES ('%s', %d);", "Player1", score);
+    rc = sqlite3_exec(db, statement, NULL, 0, &zErrMsg);
+    if (rc != SQLITE_OK)
+    {
+        log_error("Create Player table, SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+        *Error = true;
+        return;
+    }
+    log_debug("Player table created");
+
+    version = targetVersion;
+    log_debug("Database version updated to: %s", version);
 }
 
 static void UpgradeIfRequired(bool* Continue, bool* Error)
 {
-    log_debug("Version is: %s", version);
     if (strcmp(version, "0") == 0)
     {
-        UpgradeToVersion1(Continue, Error);
+        log_debug("Upgrade from version 0");
+        UpgradeToVersion1_0_0(Continue, Error);
     }
 }
 
 static int ReadVersion(void* NotUsed, int columns, char** columnTexts, char** columnNames)
 {
-    log_trace("ReadVersion called");
     if (columns > 0 && columnTexts[0])
     {
         version = columnTexts[0];
-        log_debug("Version updated to: %s", version);
+        log_debug("Local version updated to: %s", version);
     }
 
     return 0;
@@ -68,15 +136,13 @@ static int ReadVersion(void* NotUsed, int columns, char** columnTexts, char** co
 
 void InitializeRepository(bool* Continue, bool* Error)
 {
-    log_trace("InitializeRepository called");
-
 	char databaseFile[256];
     GetFullPath(databaseFile, "hocoslamfy.db");
 
     int rc = sqlite3_open(databaseFile, &db);
     if (rc)
     {
-        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+        log_error("Can't open database: %s\n", sqlite3_errmsg(db));
         *Error = true;
         return;
     }
@@ -85,17 +151,28 @@ void InitializeRepository(bool* Continue, bool* Error)
     rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS version (version_number TEXT); SELECT version_number FROM version;", ReadVersion, 0, &zErrMsg);
     if (rc != SQLITE_OK)
     {
-        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        log_error("SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
         *Error = true;
         return;
     }
 
     UpgradeIfRequired(Continue, Error);
+
+    ListOfPlayer players;
+    if (ReadPlayersList(&players) == 0 && players.list && players.count)
+    {
+        for (int i = 0; i < players.count; i++)
+        {
+            log_debug("Player %s found, Id: %d, Highscore: %d", players.list[i].PlayerName, players.list[i].PlayerId, players.list[i].Highscore);
+        }
+        FreePlayersList(&players);
+    }
+
     log_trace("InitializeRepository finished");
 }
 
-extern void FinalizeRepository(void)
+void FinalizeRepository(void)
 {
     sqlite3_close(db);
 }
