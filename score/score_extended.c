@@ -85,13 +85,15 @@ uint32_t GetHighScore()
 void UpdateScoreMessage()
 {
 	int highScore = Players.list[CurrentUser].Highscore;
-	const char *MaybeNew;
+	const char *maybeNew;
+	const char *mayBeOld;
 	if (CurrentScore > highScore)
 	{
-		MaybeNew = "NEW ";
-		highScore = CurrentScore;
+		maybeNew = "NEW high ";
+		mayBeOld = "OLD ";
 	} else {
-		MaybeNew = "";
+		maybeNew = "";
+		mayBeOld = "";
 	}
 
 	if (ScoreMessage != NULL)
@@ -99,7 +101,7 @@ void UpdateScoreMessage()
 		free(ScoreMessage);
 		ScoreMessage = NULL;
 	}
-	int Length = 2, NewLength;
+	int Length = 50, NewLength;
 	ScoreMessage = malloc(Length);
 
 	const char* GameOverReasonString = "";
@@ -126,11 +128,13 @@ void UpdateScoreMessage()
 #if SCREEN_HEIGHT < 240
 		"Score: %" PRIu32 " / %sHigh: %" PRIu32 "\n\n"
 #else
-		"Your score was %" PRIu32 "\n\n"
+		"Your %sscore: %" PRIu32 "\n"
 		"%sHigh Score: %" PRIu32 "\n\n"
 #endif
 		"Press %s to play again\nor %s to exit",
-		GameOverReasonString, CurrentScore, MaybeNew, highScore,
+		GameOverReasonString,
+		maybeNew, CurrentScore,
+		mayBeOld, highScore,
 		GetEnterGamePrompt(), GetExitGamePrompt())
 		) >= Length)
 	{
@@ -149,7 +153,7 @@ void ScoreGatherInput(bool* Continue)
 		{
 			if (CurrentScore > Players.list[CurrentUser].Highscore)
 			{
-				UpdateHighscore(Players.list[CurrentUser].PlayerId, CurrentScore);
+				UpdateHighscore(&(Players.list[CurrentUser]), CurrentScore);
 			}
 
 			ToGame();
@@ -164,7 +168,7 @@ void ScoreGatherInput(bool* Continue)
 		{
 			if (CurrentScore > Players.list[CurrentUser].Highscore)
 			{
-				UpdateHighscore(Players.list[CurrentUser].PlayerId, CurrentScore);
+				UpdateHighscore(&(Players.list[CurrentUser]), CurrentScore);
 			}
 
 			*Continue = false;
@@ -186,7 +190,7 @@ void ScoreGatherInput(bool* Continue)
 				CurrentUser--;
 			}
 
-			UpdateCurrentPlayer(Players.list[CurrentUser].PlayerId);
+			UpdateCurrentPlayer(&(Players.list[CurrentUser]));
 			UpdateScoreMessage();
 		}
 		else if (IsRightEvent(&ev) && Players.count > 1)
@@ -199,7 +203,7 @@ void ScoreGatherInput(bool* Continue)
 				CurrentUser++;
 			}
 
-			UpdateCurrentPlayer(Players.list[CurrentUser].PlayerId);
+			UpdateCurrentPlayer(&(Players.list[CurrentUser]));
 			UpdateScoreMessage();
 		}
 		else if (IsScreenshotEvent(&ev))

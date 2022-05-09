@@ -17,11 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-extern void InitializeRepository(bool* Continue, bool* Error);
-extern void FinalizeRepository(void);
-extern int UpdateCurrentPlayer(int playerId);
-extern int UpdateHighscore(int playerId, int highscore);
-
 typedef struct
 {
     int PlayerId;
@@ -37,3 +32,8 @@ typedef struct
 } ListOfPlayer;
 
 extern ListOfPlayer Players;
+
+extern void InitializeRepository(bool* Continue, bool* Error);
+extern void FinalizeRepository(void);
+extern int UpdateCurrentPlayer(Player* player);
+extern int UpdateHighscore(Player* player, int highscore);

@@ -51,7 +51,7 @@ static int ReadPlayersList(ListOfPlayer* players)
         {
             log_error("Reallocation failed");
             sqlite3_finalize(res);
-            exit(EXIT_FAILURE);
+            return 1;
         }
         else
         {
@@ -99,7 +99,7 @@ static void UpgradeToVersion1_0_0(bool* Continue, bool* Error)
     {
         log_error("Create Version table, SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
-        *Error = true;
+        *Continue = false; *Error = true;
         return;
     }
 
@@ -110,7 +110,7 @@ static void UpgradeToVersion1_0_0(bool* Continue, bool* Error)
     {
         log_error("Create Player table, SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
-        *Error = true;
+        *Continue = false; *Error = true;
         return;
     }
     log_debug("Player table created");
@@ -148,7 +148,7 @@ void InitializeRepository(bool* Continue, bool* Error)
     if (rc)
     {
         log_error("Can't open database: %s\n", sqlite3_errmsg(db));
-        *Error = true;
+        *Continue = false; *Error = true;
         return;
     }
 
@@ -158,7 +158,7 @@ void InitializeRepository(bool* Continue, bool* Error)
     {
         log_error("SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
-        *Error = true;
+        *Continue = false; *Error = true;
         return;
     }
 
@@ -171,6 +171,11 @@ void InitializeRepository(bool* Continue, bool* Error)
             log_debug("Player %s found, Id: %d, Highscore: %d", Players.list[i].PlayerName, Players.list[i].PlayerId, Players.list[i].Highscore);
         }
     }
+    else
+    {
+        *Continue = false; *Error = true;        
+        return;
+    }
 
     log_trace("InitializeRepository finished");
 }
@@ -181,11 +186,11 @@ void FinalizeRepository(void)
     sqlite3_close(db);
 }
 
-int UpdateCurrentPlayer(int playerId)
+int UpdateCurrentPlayer(Player* player)
 {
     char *zErrMsg = 0;
     char statement[1024];
-    snprintf(statement, 1024, "UPDATE player SET current_player = CASE WHEN player_id = %d THEN 1 ELSE 0 END;", playerId);
+    snprintf(statement, 1024, "UPDATE player SET current_player = CASE WHEN player_id = %d THEN 1 ELSE 0 END;", player->PlayerId);
     int rc = sqlite3_exec(db, statement, NULL, 0, &zErrMsg);
     if (rc != SQLITE_OK)
     {
@@ -196,17 +201,17 @@ int UpdateCurrentPlayer(int playerId)
 
     for (int i = 0; i < Players.count; i++)
     {
-        Players.list[i].CurrentPlayer = Players.list[i].PlayerId == playerId;
+        Players.list[i].CurrentPlayer = Players.list[i].PlayerId == player->PlayerId;
     }
 
     return 0;
 }
 
-int UpdateHighscore(int playerId, int highscore)
+int UpdateHighscore(Player* player, int highscore)
 {
     char *zErrMsg = 0;
     char statement[1024];
-    snprintf(statement, 1024, "UPDATE player SET player_highscore = %d WHERE player_id = %d;", playerId, highscore);
+    snprintf(statement, 1024, "UPDATE player SET player_highscore = %d WHERE player_id = %d;", highscore, player->PlayerId);
     int rc = sqlite3_exec(db, statement, NULL, 0, &zErrMsg);
     if (rc != SQLITE_OK)
     {
@@ -217,7 +222,7 @@ int UpdateHighscore(int playerId, int highscore)
 
     for (int i = 0; i < Players.count; i++)
     {
-        if (Players.list[i].PlayerId == playerId)
+        if (Players.list[i].PlayerId == player->PlayerId)
         {
             Players.list[i].Highscore = highscore;
             break;

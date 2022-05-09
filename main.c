@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 #endif
 
 	Initialize(&Continue, &Error);
-	Uint32 Duration = 16;
+	Uint32 Duration = 32;
 	while (Continue)
 	{
 		GatherInput(&Continue);
