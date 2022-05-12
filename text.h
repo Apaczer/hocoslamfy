@@ -46,19 +46,19 @@ extern void InitializeText(bool* Continue, bool* Error);
 extern void FinalizeText(void);
 
 #if SCREEN_BPP == 16
-extern void PrintString(const char* String, uint16_t TextColor,
-	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
-	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
-
 extern void PrintStringOutline(const char* String, uint16_t TextColor, uint16_t OutlineColor,
 	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
 	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
+
+extern void PrintSmallStringOutline(const char* String, uint16_t TextColor, uint16_t OutlineColor,
+	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
+	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
 #else
-extern void PrintString(const char* String, uint32_t TextColor,
+extern void PrintStringOutline(const char* String, uint32_t TextColor, uint32_t OutlineColor,
 	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
 	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
 
-extern void PrintStringOutline(const char* String, uint32_t TextColor, uint32_t OutlineColor,
+extern void PrintSmallStringOutline(const char* String, uint32_t TextColor, uint32_t OutlineColor,
 	void* Dest, uint32_t DestPitch, uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height,
 	enum HorizontalAlignment HorizontalAlignment, enum VerticalAlignment VerticalAlignment);
 #endif

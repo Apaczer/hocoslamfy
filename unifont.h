@@ -21,9 +21,11 @@
 #define _UNIFONT_H_
 
 extern const unsigned char _font_height;
-
 extern const unsigned short _font_bits[];
-
 extern const unsigned char _font_width[];
+
+extern const unsigned char _font_height_small;
+extern const unsigned short _font_bits_small[];
+extern const unsigned char _font_width_small[];
 
 #endif /* _UNIFONT_H_ */

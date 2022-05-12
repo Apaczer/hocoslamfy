@@ -34,6 +34,7 @@
 
 static bool     WaitingForRelease = false;
 static char*    WelcomeMessage    = NULL;
+static char*    ControlsMessage   = NULL;
 
 static uint32_t HeaderFrame       = 0;
 static Uint32   HeaderFrameTime   = 0;
@@ -55,19 +56,46 @@ static const uint32_t HeaderFrameAnimation[TITLE_ANIMATION_FRAMES] = {
 
 void setWelcomeMessage()
 {
+	int Length = 2, NewLength;
 	if (WelcomeMessage == NULL)
 	{
-		int Length = 2, NewLength;
+		Length = 2;
 		WelcomeMessage = malloc(Length);
-#ifdef NO_SHAKE		
-		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s bee\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetScoreTogglePrompt(), FollowBee==true?"detach score from":"attach score to", GetExitGamePrompt())) >= Length)	
-#else		
-		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s rumble\n%s to %s bee\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), Rumble==true?"disable":"enable", GetScoreTogglePrompt(), FollowBee==true?"detach score from":"attach score to", GetExitGamePrompt())) >= Length)
-#endif
+		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit", GetEnterGamePrompt(), GetExitGamePrompt())) >= Length)
 		{
 			Length = NewLength + 1;
 			WelcomeMessage = realloc(WelcomeMessage, Length);
 		}
+	}
+
+	if (ControlsMessage == NULL)
+	{
+		Length = 2;
+		ControlsMessage = malloc(Length);
+#ifdef NO_SHAKE		
+		while ((NewLength = snprintf(ControlsMessage, Length, "In-game:\n%s to rise\n%s to pause\n%s to %s bee\n%s to exit", GetBoostPrompt(), GetPausePrompt(), GetScoreTogglePrompt(), FollowBee==true?"detach score from":"attach score to", GetExitGamePrompt())) >= Length)	
+#else		
+		while ((NewLength = snprintf(ControlsMessage, Length, "In-game:\n%s to rise\n%s to pause\n%s to %s rumble\n%s to %s bee\n%s to exit", GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), Rumble==true?"disable":"enable", GetScoreTogglePrompt(), FollowBee==true?"detach score from":"attach score to", GetExitGamePrompt())) >= Length)
+#endif
+		{
+			Length = NewLength + 1;
+			ControlsMessage = realloc(ControlsMessage, Length);
+		}
+	}
+}
+
+void TitleCleanUp()
+{
+	if (WelcomeMessage != NULL)
+	{
+		free(WelcomeMessage);
+		WelcomeMessage = NULL;
+	}
+
+	if (ControlsMessage != NULL)
+	{
+		free(ControlsMessage);
+		ControlsMessage = NULL;
 	}
 }
 
@@ -83,35 +111,25 @@ void TitleScreenGatherInput(bool* Continue)
 		{
 			WaitingForRelease = false;
 			ToGame();
-			if (WelcomeMessage != NULL)
-			{
-				free(WelcomeMessage);
-				WelcomeMessage = NULL;
-			}
+			TitleCleanUp();
 			return;
 		}
 		else if (IsExitGameEvent(&ev))
 		{
 			*Continue = false;
-			if (WelcomeMessage != NULL)
-			{
-				free(WelcomeMessage);
-				WelcomeMessage = NULL;
-			}
+			TitleCleanUp();
 			return;
 		}
 		else if (IsRumbleEvent(&ev))
 		{
 			Rumble = !Rumble;
-			free(WelcomeMessage);
-			WelcomeMessage=NULL;
+			TitleCleanUp();
 			setWelcomeMessage();
 		}		
 		else if (IsScoreToggleEvent(&ev))
 		{
 			FollowBee = !FollowBee;
-			free(WelcomeMessage);
-			WelcomeMessage=NULL;
+			TitleCleanUp();
 			setWelcomeMessage();
 		}
 		else if (IsScreenshotEvent(&ev))
@@ -169,7 +187,19 @@ void TitleScreenOutputFrame()
 		0,
 		SCREEN_HEIGHT / 4,
 		SCREEN_WIDTH,
-		SCREEN_HEIGHT - (SCREEN_HEIGHT / 4),
+		SCREEN_HEIGHT / 4,
+		CENTER,
+		MIDDLE);
+
+	PrintSmallStringOutline(ControlsMessage,
+		SDL_MapRGB(Screen->format, 255, 255, 255),
+		SDL_MapRGB(Screen->format, 0, 0, 0),
+		Screen->pixels,
+		Screen->pitch,
+		0,
+		SCREEN_HEIGHT / 2,
+		SCREEN_WIDTH,
+		SCREEN_HEIGHT / 2,
 		CENTER,
 		MIDDLE);
 	if (SDL_MUSTLOCK(Screen))
