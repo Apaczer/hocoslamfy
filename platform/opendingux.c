@@ -37,14 +37,14 @@ Uint32 ToNextFrame(void)
 bool IsEnterGamePressingEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYDOWN
-	    && (event->key.keysym.sym == SDLK_LCTRL  /* A */
+	    && (event->key.keysym.sym == SDLK_LALT  /* A */
 	     || event->key.keysym.sym == SDLK_RETURN /* Start */);
 }
 
 bool IsEnterGameReleasingEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYUP
-	    && (event->key.keysym.sym == SDLK_LCTRL  /* A */
+	    && (event->key.keysym.sym == SDLK_LALT  /* A */
 	     || event->key.keysym.sym == SDLK_RETURN /* Start */);
 }
 
@@ -57,7 +57,7 @@ bool IsExitGameEvent(const SDL_Event* event)
 {
 	return event->type == SDL_QUIT
 	    || (event->type == SDL_KEYDOWN
-	     && (event->key.keysym.sym == SDLK_LALT   /* B */
+	     && (event->key.keysym.sym == SDLK_LCTRL   /* B */
 	      || event->key.keysym.sym == SDLK_ESCAPE /* Select */));
 }
 
@@ -69,8 +69,8 @@ const char* GetExitGamePrompt(void)
 bool IsBoostEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYDOWN
-	    && (event->key.keysym.sym == SDLK_LCTRL  /* A */
-	     || event->key.keysym.sym == SDLK_LALT   /* B */
+	    && (event->key.keysym.sym == SDLK_LALT  /* A */
+	     || event->key.keysym.sym == SDLK_LCTRL   /* B */
 	     || event->key.keysym.sym == SDLK_LSHIFT /* GCW Zero: X; Dingoo A320: Y */
 	     || event->key.keysym.sym == SDLK_SPACE  /* GCW Zero: Y; Dingoo A320: X */);
 }
