@@ -1,4 +1,4 @@
-# hocoslamfy, running on RG280V with Rumble and more
+# hocoslamfy, running with Rumble and more
 
 You are a small bee and you must fly to avoid the bamboo shoots!
 
@@ -7,6 +7,8 @@ This game requires SDL 1.2, SDL-image 1.2, SDL-mixer 1.2 and a C compiler. It is
 Everything's under the GPL version 2.
 
 To compile this for PC, use `make clean; make` on a PC with SDL, SDL-image and SDL-mixer 1.2. You'll then get a windowed SDL game.
+
+To compile this for MiyooCFW change PATH env variable to eg.: `PATH=$PATH:/opt/miyoo/bin` and use `make TARGET=hocoslamfy-miyoo`. Program uses `./data` dir for storing necessary assets including *.ogg audio. To enable RUMBLE remove -DNO_SHAKE flag and add `libshake` to your custom toolchain.
 
 To compile this for OpenDingux on Dingoo A320 or GCW Zero, use `make TARGET=hocoslamfy-gcw0 clean; make TARGET=hocoslamfy-gcw0 opk` on a PC with the `PATH` set to include your OpenDingux mipsel toolchain. To compile for OpenDingux on RS-90, substitute `TARGET=hocoslamfy-rs90`.
 
