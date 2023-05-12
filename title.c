@@ -60,9 +60,9 @@ void setWelcomeMessage()
 		int Length = 2, NewLength;
 		WelcomeMessage = malloc(Length);
 #ifdef NO_SHAKE		
-		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s bee\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetScoreTogglePrompt(), FollowBee==true?"detach score from":"attach score to", GetExitGamePrompt())) >= Length)	
+		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s bee\n%s to take screenshot\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetScoreTogglePrompt(), FollowBee==true?"detach score from":"attach score to", GetScreenshotPrompt(), GetExitGamePrompt())) >= Length)	
 #else		
-		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s rumble\n%s to %s bee\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), Rumble==true?"disable":"enable", GetScoreTogglePrompt(), FollowBee==true?"detach score from":"attach score to", GetExitGamePrompt())) >= Length)
+		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s rumble\n%s to %s bee\n%s to take screenshot\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), Rumble==true?"disable":"enable", GetScoreTogglePrompt(), FollowBee==true?"detach score from":"attach score to", GetScreenshotPrompt(), GetExitGamePrompt())) >= Length)
 #endif
 		{
 			Length = NewLength + 1;
