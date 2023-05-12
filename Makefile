@@ -1,5 +1,13 @@
-TARGET      ?= hocoslamfy-od
+TARGET      ?= hocoslamfy
 
+ifeq ($(TARGET), hocoslamfy-miyoo)
+  CC        := arm-linux-gcc
+  STRIP     := arm-linux-strip
+  OBJS       = platform/opendingux.o
+  DEFS      := -DNO_SHAKE -DUSE_HOME 
+  FLAGS     := 
+  DEVICE    := miyoo
+else
 ifeq ($(TARGET), hocoslamfy-gcw0)
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
@@ -28,10 +36,11 @@ ifeq ($(TARGET), hocoslamfy)
   CC        := gcc
   STRIP     := strip
   OBJS       = platform/general.o
-  DEFS      := 
+  DEFS      := -DNO_SHAKE
   FLAGS     := 
 else
   $(error Unknown target: $(TARGET))
+endif
 endif
 endif
 endif
