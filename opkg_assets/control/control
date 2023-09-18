@@ -1,0 +1,7 @@
+Package: hocoslamfy
+Version: 2.0
+Description: Avoid the bamboo while flying with your bee
+Section: games
+Priority: optional
+Maintainer: Apacz
+Architecture: arm

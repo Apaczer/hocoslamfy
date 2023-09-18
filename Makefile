@@ -1,11 +1,19 @@
-TARGET      ?= hocoslamfy
+TARGET ?= hocoslamfy
+VERSION ?= $(shell date +%Y-%m-%d\ %H:%M)
+RELEASEDIR = package
+ASSETSDIR = assets
+OPKG_ASSETSDIR = opkg_assets
+LINK = hocoslamfy.lnk
+DESTDIR = games
+SECTION = games
+ALIASES = aliases.txt
 
-ifeq ($(TARGET), hocoslamfy-miyoo)
+ifeq ($(TARGET), hocoslamfy)
   CC        := arm-linux-gcc
   STRIP     := arm-linux-strip
   OBJS       = platform/opendingux.o
-  DEFS      := -DNO_SHAKE -DUSE_HOME 
-  FLAGS     := 
+  DEFS      := -DNO_SHAKE -DUSE_HOME
+  FLAGS     :=
   DEVICE    := miyoo
 else
 ifeq ($(TARGET), hocoslamfy-gcw0)
@@ -32,7 +40,7 @@ ifeq ($(TARGET), hocoslamfy-rs90)
   FLAGS     := 
   DEVICE    := rs90
 else
-ifeq ($(TARGET), hocoslamfy)
+ifeq ($(TARGET), hocoslamfy_pc)
   CC        := gcc
   STRIP     := strip
   OBJS       = platform/general.o
@@ -67,17 +75,17 @@ ifneq (, $(findstring MINGW, $(shell uname -s)))
 endif
 
 WAVS        := $(wildcard sound/*.wav)
-OGGS        := $(WAVS:sound/%.wav=data/%.ogg)
+OGGS        := $(WAVS:sound/%.wav=$(ASSETSDIR)/data/%.ogg)
 
 DATA_TO_CLEAN := $(OGGS)
 
-.PHONY: all opk
+.PHONY: all opk package zip ipk
 
 all: $(TARGET) $(OGGS)
 
 include Makefile.rules
 
-$(OGGS): data/%.ogg: sound/%.wav
+$(OGGS): $(ASSETSDIR)/data/%.ogg: sound/%.wav
 	$(SUM) "  OGG     $@"
 	$(CMD)oggenc --resample 44100 -q2 $< -o $@
 
@@ -87,14 +95,39 @@ $(TARGET).opk: $(TARGET) $(OGGS)
 	$(SUM) "  OPK     $@"
 	$(CMD)rm -rf .opk_data
 	$(CMD)mkdir -p .opk_data
-	$(CMD)cp data/default.$(DEVICE).desktop .opk_data/
-	$(CMD)cp data/*.png .opk_data/
+	$(CMD)cp $(ASSETSDIR)/data/default.$(DEVICE).desktop .opk_data/
+	$(CMD)cp $(ASSETSDIR)/data/*.png .opk_data/
 	$(CMD)cp $(OGGS) .opk_data/
-	$(CMD)cp data/*.txt .opk_data/
+	$(CMD)cp $(ASSETSDIR)/data/*.txt .opk_data/
 	$(CMD)cp COPYRIGHT .opk_data/COPYRIGHT
 	$(CMD)cp $< .opk_data/$(TARGET)
 	$(CMD)$(STRIP) .opk_data/$(TARGET)
 	$(CMD)mksquashfs .opk_data $@ -all-root -noappend -no-exports -no-xattrs -no-progress >/dev/null
+
+package: all
+	@mkdir -p $(RELEASEDIR)
+	@cp *$(TARGET) $(RELEASEDIR)/
+	@mkdir -p $(RELEASEDIR)/mnt/$(DESTDIR)/$(TARGET)
+	@mkdir -p $(RELEASEDIR)/mnt/gmenu2x/sections/$(SECTION)
+	@mv $(RELEASEDIR)/*$(TARGET) $(RELEASEDIR)/mnt/$(DESTDIR)/$(TARGET)/
+	@cp -r $(ASSETSDIR)/* $(RELEASEDIR)/mnt/$(DESTDIR)/$(TARGET)
+	@cp $(OPKG_ASSETSDIR)/$(LINK) $(RELEASEDIR)/mnt/gmenu2x/sections/$(SECTION)
+	@cp $(OPKG_ASSETSDIR)/$(ALIASES) $(RELEASEDIR)/mnt/$(DESTDIR)/$(TARGET)
+
+zip: package
+	@cd $(RELEASEDIR) && zip -rq $(TARGET)$(VERSION).zip ./* && mv *.zip ..
+	@rm -rf $(RELEASEDIR)
+
+ipk: package
+	@mkdir -p $(RELEASEDIR)/data
+	@mv $(RELEASEDIR)/mnt $(RELEASEDIR)/data/
+	@cp -r $(OPKG_ASSETSDIR)/control $(RELEASEDIR)
+	@sed "s/^Version:.*/Version: $(VERSION)/" $(OPKG_ASSETSDIR)/control/control > $(RELEASEDIR)/control/control
+	@echo 2.0 > $(RELEASEDIR)/debian-binary
+	@tar --owner=0 --group=0 -czvf $(RELEASEDIR)/data.tar.gz -C $(RELEASEDIR)/data/ . >/dev/null 2>&1
+	@tar --owner=0 --group=0 -czvf $(RELEASEDIR)/control.tar.gz -C $(RELEASEDIR)/control/ . >/dev/null 2>&1
+	@ar r $(TARGET).ipk $(RELEASEDIR)/control.tar.gz $(RELEASEDIR)/data.tar.gz $(RELEASEDIR)/debian-binary
+	@rm -rf $(RELEASEDIR)
 
 # The two below declarations ensure that editing a .c file recompiles only that
 # file, but editing a .h file recompiles everything.

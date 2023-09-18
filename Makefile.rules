@@ -22,3 +22,6 @@ $(TARGET): $(OBJS)
 clean:
 	$(SUM) "  CLEAN   ."
 	$(CMD)rm -rf $(OBJS) $(TARGET) $(DATA_TO_CLEAN)
+	$(CMD)rm -rf package
+	$(CMD)rm -f *.ipk
+	$(CMD)rm -f *.zip
