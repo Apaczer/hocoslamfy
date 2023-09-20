@@ -1,5 +1,5 @@
 *.o
-assets/data/*.ogg
+*.ogg
 hocoslamfy
 hocoslamfy-*
 .opk_data/

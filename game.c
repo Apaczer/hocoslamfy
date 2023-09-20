@@ -311,6 +311,7 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				break;
 			}
 
+#ifdef MIYOO
 			if(PlayerRumbleTime > 0) {
 				if (PlayerRumbleTime > 5000) {
 					ToggleRumble(false);
@@ -319,7 +320,7 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 					PlayerRumbleTime += Milliseconds;
 				}
 			}
-
+#endif
 			// Collision detection.
 			for (i = 0; i < RectangleCount; i++)
 			{
