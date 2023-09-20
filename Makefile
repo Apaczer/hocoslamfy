@@ -121,11 +121,11 @@ zip: package
 ipk: package
 	@mkdir -p $(RELEASEDIR)/data
 	@mv $(RELEASEDIR)/mnt $(RELEASEDIR)/data/
-	@cp -r $(OPKG_ASSETSDIR)/control $(RELEASEDIR)
-	@sed "s/^Version:.*/Version: $(VERSION)/" $(OPKG_ASSETSDIR)/control/control > $(RELEASEDIR)/control/control
+	@cp -r $(OPKG_ASSETSDIR)/CONTROL $(RELEASEDIR)
+	@sed "s/^Version:.*/Version: $(VERSION)/" $(OPKG_ASSETSDIR)/CONTROL/control > $(RELEASEDIR)/CONTROL/control
 	@echo 2.0 > $(RELEASEDIR)/debian-binary
 	@tar --owner=0 --group=0 -czvf $(RELEASEDIR)/data.tar.gz -C $(RELEASEDIR)/data/ . >/dev/null 2>&1
-	@tar --owner=0 --group=0 -czvf $(RELEASEDIR)/control.tar.gz -C $(RELEASEDIR)/control/ . >/dev/null 2>&1
+	@tar --owner=0 --group=0 -czvf $(RELEASEDIR)/control.tar.gz -C $(RELEASEDIR)/CONTROL/ . >/dev/null 2>&1
 	@ar r $(TARGET).ipk $(RELEASEDIR)/control.tar.gz $(RELEASEDIR)/data.tar.gz $(RELEASEDIR)/debian-binary
 	@rm -rf $(RELEASEDIR)
 
